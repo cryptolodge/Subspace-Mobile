@@ -4,4 +4,8 @@
     <PreferenceCategory android:title="Zone Settings" android:summary="Zone settings">
         <EditTextPreference android:summary="The directory server to download the zone list from" android:defaultValue="ssdir.playsubspace.com" android:key="pref_directoryServer" android:title="Directory Server"></EditTextPreference>
     </PreferenceCategory>
+    <PreferenceCategory android:title="Debug" android:summary="Debug">
+        <CheckBoxPreference android:key="pref_logConnection" android:title="Log Connection" android:defaultValue="true"/>
+        <CheckBoxPreference android:key="pref_logPackets" android:title="Log Packets" android:defaultValue="false"/>
+    </PreferenceCategory>
 </PreferenceScreen>

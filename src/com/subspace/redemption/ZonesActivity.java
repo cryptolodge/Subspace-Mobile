@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 
 import com.subspace.network.*;
+import com.subspace.redemption.database.DataHelper;
+import com.subspace.redemption.dataobjects.Zone;
 
 
 import android.app.Activity;
@@ -33,8 +36,9 @@ public class ZonesActivity extends ListActivity  {
 	
 	static final String TAG = "Subspace";	
 	
-	ArrayList<DirectoryZone> zones;
-	DirectoryZoneAdapter adapter;
+	ArrayList<Zone> zones;
+	ZoneAdapter adapter;
+	DataHelper db;
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -42,8 +46,9 @@ public class ZonesActivity extends ListActivity  {
     	  super.onCreate(savedInstanceState);
     	  setContentView(R.layout.zones_activity);
     	  
-    	  zones = new ArrayList<DirectoryZone>();
-    	  adapter = new DirectoryZoneAdapter(this, R.layout.zone_item, zones);
+    	  zones = new ArrayList<Zone>();
+    	  adapter = new ZoneAdapter(this, R.layout.zone_item, zones);
+    	  db = new DataHelper(this);
     	  
           setListAdapter(adapter);
     }
@@ -75,7 +80,7 @@ public class ZonesActivity extends ListActivity  {
     }
 
     
-    private class DownloadZonesTask extends AsyncTask<String, Void,ArrayList<DirectoryZone>> {
+    private class DownloadZonesTask extends AsyncTask<String, String,ArrayList<DirectoryZone>> {
     	private ProgressDialog _dialog;
     	private Activity _activity;
     	public DownloadZonesTask(Activity activity)
@@ -89,10 +94,19 @@ public class ZonesActivity extends ListActivity  {
             _dialog.setMessage("Progress start");
             _dialog.show();
         }
+        
+        
+        @Override
+		protected void onProgressUpdate(String... progress) {
+			// TODO Auto-generated method stub
+			super.onProgressUpdate(progress);
+			_dialog.setMessage(progress[0]);
+			Log.d(TAG, progress[0]);
+		}
 
-    	
-        protected ArrayList<DirectoryZone> doInBackground(String... server) 
-        {        	
+		protected ArrayList<DirectoryZone> doInBackground(String... server) 
+        {       	
+        	
         	ArrayList<DirectoryZone> zones =null;
         	try {		
         		NetworkDirectory nd = new NetworkDirectory();
@@ -106,20 +120,33 @@ public class ZonesActivity extends ListActivity  {
         	 
         	        });
         	} 
-    		catch (IOException e)
+    		catch (Exception e)
     		{    			
     			Log.e(TAG, Log.getStackTraceString(e));    			
     		}	
         	return zones;        	
         }
         
-        protected void onPostExecute(ArrayList<DirectoryZone> result) { 
+        protected void onPostExecute(ArrayList<DirectoryZone> result) {
+        	
+        	List<Zone> zoneList = new ArrayList<Zone>();
+        	//delete all zones
+        	db.clearZones();
+        	//referesh
+        	for(DirectoryZone dz : result)
+        	{
+        		Zone zone = new Zone(dz);
+        		//add to db        		
+        		db.addZone(zone);
+        		zoneList.add(zone);
+        	}        	
+        	
         	adapter.notifyDataSetChanged();        	
         	adapter.clear();     
         	
-        	for(DirectoryZone dz : result)
+        	for(Zone z : zoneList)
         	{
-        		adapter.add(dz);
+        		adapter.add(z);
         	}
         	adapter.notifyDataSetChanged();
 			
@@ -131,10 +158,10 @@ public class ZonesActivity extends ListActivity  {
 
     }
     
-    private class DirectoryZoneAdapter extends ArrayAdapter<DirectoryZone> {
-        private ArrayList<DirectoryZone> items;        
+    private class ZoneAdapter extends ArrayAdapter<Zone> {
+        private ArrayList<Zone> items;        
 
-        public DirectoryZoneAdapter(Context context, int textViewResourceId, ArrayList<DirectoryZone> items) {
+        public ZoneAdapter(Context context, int textViewResourceId, ArrayList<Zone> items) {
                 super(context, textViewResourceId, items);
                 this.items = items;
         }
@@ -142,7 +169,7 @@ public class ZonesActivity extends ListActivity  {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
         	ViewHolder holder;
-        	DirectoryZone o = items.get(position);
+        	Zone o = items.get(position);
         	if(convertView==null)
         	{
         		convertView = View.inflate(getContext(), R.layout.zone_item, null);
@@ -157,7 +184,7 @@ public class ZonesActivity extends ListActivity  {
         	
         	if(o!=null)
         	{
-        		holder.topText.setText(o.Name + " : " + o.PlayerCount + " Players");
+        		holder.topText.setText(o.Name + " : " + o.Population + " Players");
         	}
             return convertView;
         }

@@ -41,7 +41,10 @@ u32 timestamp;
 };
  */
 public class NetworkSubspace extends Network implements INetworkCallback {	
-	private static final boolean LOG_PACKETS = true;
+	//these can be set via preferences
+	public static boolean LOG_PACKETS = false;
+	public static boolean LOG_CONNECTION = true;
+	
 	private static final String TAG = "Subspace";
     public static final String CHAR_ENCODING = "ISO-8859-1";
     public static final int MAX_RETRY = 5;
@@ -102,11 +105,12 @@ public class NetworkSubspace extends Network implements INetworkCallback {
         return connected;
     }
 
-    public final void SSDisconnect() throws IOException {
+    public final void SSDisconnect() throws IOException {    	
     	//send 1 disconnect
         this.SSSend(NetworkPacket.CreateDisconnect());
         //signal that we've disconnected
         this.connected = false;
+        Log.d(TAG,"Sent Disconnect");
         //send disconnect 2 times to make sure
         this.SSSend(NetworkPacket.CreateDisconnect());
         this.SSSend(NetworkPacket.CreateDisconnect());
@@ -135,7 +139,7 @@ public class NetworkSubspace extends Network implements INetworkCallback {
             //if not connected pass to encryption handler
             if (!this.connected && (data.get(0) == NetworkPacket.CORE)) {
                 if (data.get(1) == NetworkPacket.CORE_CONNECTIONACK) {
-                	if(LOG_PACKETS)
+                	if(LOG_CONNECTION)
                 	{
                 		Log.d(TAG,"Received ConnectionAck: " + Util.ToHex(data));
                 	}
@@ -147,15 +151,16 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                             Log.d(TAG,Util.ToHex(data));
                         }
                     }
-                } else if (data.get(1) == NetworkPacket.CORE_SYNC) //handle subgame flood protection
+                } 
+                else if (data.get(1) == NetworkPacket.CORE_SYNC) //handle subgame flood protection
                 {
-                	if(LOG_PACKETS)
+                	if(LOG_CONNECTION)
                 	{
                 		Log.d(TAG,"Received Sync: " + Util.ToHex(data));
                 	}
                     ByteBuffer syncResponse = NetworkPacket.CreateSyncResponse(data.getInt(2));
                     this.SSSend(syncResponse);         
-                	if(LOG_PACKETS)
+                	if(LOG_CONNECTION)
                 	{
                 		Log.d(TAG,"Send back Sync: " + Util.ToHex(syncResponse.array()));
                 	}
@@ -178,7 +183,10 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                 }
                 
                 //log packets
-                Log.v(TAG,Util.ToHex(data));
+                if(LOG_PACKETS)
+                {
+                	Log.v(TAG,Util.ToHex(data));
+                }
                 
                 byte packetType = data.get(); 
                 if (packetType == NetworkPacket.CORE) {
@@ -220,7 +228,8 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                                 }
                             } else if (id > this.reliableNextExpected) {
                                 byte[] msg = new byte[data.limit() - 6];
-                                System.arraycopy(data, 6, msg, 0, msg.length);
+                                //read into msg
+                                data.get(msg,0,msg.length);                                
                                 this.reliableIncoming.put(id, msg);
                             } else {
                             	//we've already had this packet so send a 2 more acks to make sure we don't get it again 
