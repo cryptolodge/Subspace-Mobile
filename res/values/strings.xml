@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="app_name">Subspace Redemption</string>
+    <string name="main_menu_btn_settings">Settings</string>
+    <string name="main_menu_btn_zones">Zones</string>
+    <string name="network_service_stopped">Subspace Network Service Stopped
+</string>
+    <string name="network_service_started">Subspace Network Service Started</string>
+</resources>

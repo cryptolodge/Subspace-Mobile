@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tbl_Settings">CREATE TABLE tbl_Settings(id INTEGER PRIMARY KEY, name VARCHAR(8000), value VARCHAR(8000))</string>
+</resources>
