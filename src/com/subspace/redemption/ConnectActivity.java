@@ -1,6 +1,7 @@
 package com.subspace.redemption;
 
 import com.subspace.android.StarfieldRenderer;
+import com.subspace.android.StarfieldSurfaceView;
 
 import android.app.Activity;
 import android.opengl.GLSurfaceView;
@@ -17,8 +18,8 @@ public class ConnectActivity extends Activity{
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN); // (NEW)
         
- 		GLSurfaceView view = new GLSurfaceView(this);
-   		view.setRenderer(new StarfieldRenderer());
+ 		StarfieldSurfaceView view = new StarfieldSurfaceView(this);
+   		
    		setContentView(view);
     }
 }
