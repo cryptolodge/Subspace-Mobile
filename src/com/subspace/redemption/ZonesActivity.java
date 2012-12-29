@@ -1,12 +1,12 @@
 package com.subspace.redemption;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 
+import com.subspace.android.ZoneAdapter;
 import com.subspace.network.*;
 import com.subspace.redemption.database.DataHelper;
 import com.subspace.redemption.dataobjects.Zone;
@@ -15,25 +15,18 @@ import com.subspace.redemption.dataobjects.Zone;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
-import android.content.Context;
+
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.LayoutInflater;
+
 import android.view.View;
-import android.view.ViewGroup;
+
 import android.widget.*;
 
-public class ZonesActivity extends ListActivity  {
-	
-	static class ViewHolder
-	{	    
-	    TextView topText;
-	    TextView bottomText;
-	}
-	
+public class ZonesActivity extends ListActivity  {		
 	static final String TAG = "Subspace";	
 	
 	ArrayList<Zone> zones;
@@ -158,36 +151,6 @@ public class ZonesActivity extends ListActivity  {
 
     }
     
-    private class ZoneAdapter extends ArrayAdapter<Zone> {
-        private ArrayList<Zone> items;        
-
-        public ZoneAdapter(Context context, int textViewResourceId, ArrayList<Zone> items) {
-                super(context, textViewResourceId, items);
-                this.items = items;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-        	ViewHolder holder;
-        	Zone o = items.get(position);
-        	if(convertView==null)
-        	{
-        		convertView = View.inflate(getContext(), R.layout.zone_item, null);
-        		holder = new ViewHolder();
-        		holder.topText = (TextView)convertView.findViewById(R.id.toptext);
-        		holder.bottomText = (TextView)convertView.findViewById(R.id.bottomtext);
-        		convertView.setTag(holder);
-        	}
-        	else {
-        		holder = (ViewHolder)convertView.getTag();
-        	}
-        	
-        	if(o!=null)
-        	{
-        		holder.topText.setText(o.Name + " : " + o.Population + " Players");
-        	}
-            return convertView;
-        }
-    }
+   
 
 }

@@ -212,7 +212,7 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                                 //now check queue
                                 if (this.reliableIncoming.size() > 0) {
                                     while (true) {
-                                        byte[] b = (byte[]) this.reliableIncoming.remove(new Integer(this.reliableNextExpected));
+                                        byte[] b = (byte[]) this.reliableIncoming.remove(Integer.valueOf(this.reliableNextExpected));
                                         //return null if no more left
                                         if (b == null) {
                                             return null;
@@ -240,7 +240,7 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                         }
 
                         case NetworkPacket.CORE_RELIABLEACK: {
-                            Integer id = new Integer(data.getInt(2));
+                            Integer id = Integer.valueOf(data.getInt(2));
                             reliableOutgoing.remove(id);
                             break;
                         }

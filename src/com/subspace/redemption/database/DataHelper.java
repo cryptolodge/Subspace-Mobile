@@ -9,7 +9,7 @@ import com.subspace.redemption.dataobjects.Zone;
 import android.content.*;
 
 
-import android.content.*;
+
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
