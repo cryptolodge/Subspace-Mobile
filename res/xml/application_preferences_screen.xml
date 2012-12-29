@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
   xmlns:android="http://schemas.android.com/apk/res/android">
+  	<PreferenceCategory android:title="Player Settings" android:summary="Login Details">
+  		<EditTextPreference android:summary="Username" android:defaultValue="SubspaceMobile" android:key="pref_username" android:title="Username"></EditTextPreference>  		
+  		<EditTextPreference android:summary="Username" android:defaultValue="SubspaceMobile" android:key="pref_password" android:title="Password"></EditTextPreference>
+  	</PreferenceCategory>
     <PreferenceCategory android:title="Zone Settings" android:summary="Zone settings">
         <EditTextPreference android:summary="The directory server to download the zone list from" android:defaultValue="ssdir.playsubspace.com" android:key="pref_directoryServer" android:title="Directory Server"></EditTextPreference>
     </PreferenceCategory>

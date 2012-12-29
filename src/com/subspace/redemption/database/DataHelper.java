@@ -48,14 +48,13 @@ public class DataHelper {
 		    values.put("iscustom", zone.IsCustom);
 		 
 		    // Inserting Row
-		    db.insert(TBL_ZONE, null, values);
-		    db.close(); // Closing database connection	   
+		    db.insert(TBL_ZONE, null, values);		      
 	   }
 	   
-	   public List<Zone> getAllCZones() {
-		    List<Zone> zoneList = new ArrayList<Zone>();
+	   public ArrayList<Zone> getAllZones() {
+		   ArrayList<Zone> zoneList = new ArrayList<Zone>();
 		    // Select All Query
-		    String selectQuery = "SELECT id,name,description,ip,port,iscustom FROM " + context.getString(R.string.tbl_Zone);
+		    String selectQuery = "SELECT id,name,description,ip,port,iscustom FROM " + TBL_ZONE;
 		 
 		    Cursor cursor = db.rawQuery(selectQuery, null);
 		 
@@ -68,7 +67,7 @@ public class DataHelper {
 		            zone.Description = cursor.getString(2);
 		            zone.Ip = cursor.getString(3);
 		            zone.Port = Integer.parseInt(cursor.getString(4));
-		            zone.IsCustom = Boolean.parseBoolean(cursor.getString(5));
+		            zone.IsCustom = Integer.parseInt(cursor.getString(5));
 		            // Adding contact to list
 		            zoneList.add(zone);
 		        } while (cursor.moveToNext());
@@ -80,8 +79,7 @@ public class DataHelper {
 	   
 	   public void clearZones() {		  
 		    db.delete(TBL_ZONE, "iscustom = ?",
-		            new String[] { String.valueOf("true") });
-		    db.close();
+		            new String[] { String.valueOf(0) });
 		}
 	   
 	   private static class OpenHelper extends SQLiteOpenHelper {

@@ -23,6 +23,8 @@
         <activity android:name="PlayerProfileActivity"></activity>
         <activity android:name="ZonesActivity"></activity>
         <service android:exported="false" android:name="com.subspace.android.NetworkService"></service>
+        <activity android:name="PlayActivity"></activity>
+        <activity android:name="ConnectActivity"></activity>
         
 
     </application>

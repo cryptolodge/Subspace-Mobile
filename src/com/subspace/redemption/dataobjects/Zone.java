@@ -11,7 +11,7 @@ public class Zone {
 	public String Description;
 	public int Population;
 	public int Ping;
-	public boolean IsCustom;
+	public int IsCustom;
 	
 	public Zone(DirectoryZone dz) {
 		Name = dz.Name;
@@ -19,7 +19,7 @@ public class Zone {
 		Port = dz.Port;
 		Description = dz.Description;
 		Population = dz.PlayerCount;
-		IsCustom = false;
+		IsCustom = 0;
 	}
 
 	public Zone() {

@@ -121,27 +121,30 @@ public class ZonesActivity extends ListActivity  {
         }
         
         protected void onPostExecute(ArrayList<DirectoryZone> result) {
-        	
-        	List<Zone> zoneList = new ArrayList<Zone>();
-        	//delete all zones
-        	db.clearZones();
-        	//referesh
-        	for(DirectoryZone dz : result)
+        	//only replace if results returned
+        	if(result!=null && result.size() > 0)
         	{
-        		Zone zone = new Zone(dz);
-        		//add to db        		
-        		db.addZone(zone);
-        		zoneList.add(zone);
-        	}        	
-        	
-        	adapter.notifyDataSetChanged();        	
-        	adapter.clear();     
-        	
-        	for(Zone z : zoneList)
-        	{
-        		adapter.add(z);
+	        	List<Zone> zoneList = new ArrayList<Zone>();
+	        	//delete all zones
+	        	db.clearZones();
+	        	//referesh
+	        	for(DirectoryZone dz : result)
+	        	{
+	        		Zone zone = new Zone(dz);
+	        		//add to db        		
+	        		db.addZone(zone);
+	        		zoneList.add(zone);
+	        	}        	
+	        	
+	        	adapter.notifyDataSetChanged();        	
+	        	adapter.clear();     
+	        	
+	        	for(Zone z : zoneList)
+	        	{
+	        		adapter.add(z);
+	        	}
+	        	adapter.notifyDataSetChanged();
         	}
-        	adapter.notifyDataSetChanged();
 			
             if (_dialog.isShowing()) {
                 _dialog.dismiss();
