@@ -27,6 +27,7 @@ import java.nio.ByteOrder;
 import java.util.HashMap;
 
 import android.util.Log;
+import android.util.SparseArray;
 
 /**
 struct C2SSimplePing {
@@ -59,8 +60,8 @@ public class NetworkSubspace extends Network implements INetworkCallback {
     //reliable packet handling
     int reliableNextOutbound;
     int reliableNextExpected;
-    HashMap<Integer, byte[]> reliableIncoming;
-    HashMap<Integer, byte[]> reliableOutgoing;
+    SparseArray<byte[]> reliableIncoming;
+    SparseArray<byte[]> reliableOutgoing;
     //chunked message
     byte[] chunkArray = null;
     //stream
@@ -68,6 +69,10 @@ public class NetworkSubspace extends Network implements INetworkCallback {
     ByteBuffer streamArray = null;    // Lg chunk packet data
     IDownloadUpdateCallback streamCallback;
 
+	public boolean isConnected() {
+		return connected;
+	}
+    
     public NetworkSubspace() {
         super(null);
         //set call back
@@ -76,8 +81,8 @@ public class NetworkSubspace extends Network implements INetworkCallback {
         //setup reliable
         reliableNextOutbound = 0;
         reliableNextExpected = 0;
-        reliableIncoming = new HashMap<Integer, byte[]>();
-        reliableOutgoing = new HashMap<Integer, byte[]>();
+        reliableIncoming = new SparseArray<byte[]>();
+        reliableOutgoing = new SparseArray<byte[]>();
     }
 
     public final void setDownloadUpdateCallback(IDownloadUpdateCallback callback) {
@@ -138,6 +143,12 @@ public class NetworkSubspace extends Network implements INetworkCallback {
         try {
             //if not connected pass to encryption handler
             if (!this.connected && (data.get(0) == NetworkPacket.CORE)) {
+            	 //log packets
+                if(LOG_PACKETS)
+                {
+                	Log.v(TAG,Util.ToHex(data));
+                }
+                
                 if (data.get(1) == NetworkPacket.CORE_CONNECTIONACK) {
                 	if(LOG_CONNECTION)
                 	{
@@ -212,7 +223,10 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                                 //now check queue
                                 if (this.reliableIncoming.size() > 0) {
                                     while (true) {
-                                        byte[] b = (byte[]) this.reliableIncoming.remove(Integer.valueOf(this.reliableNextExpected));
+                                    	//get stored value
+                                        byte[] b = (byte[]) this.reliableIncoming.get(this.reliableNextExpected);
+                                        //remove it
+                                        this.reliableIncoming.remove(this.reliableNextExpected);
                                         //return null if no more left
                                         if (b == null) {
                                             return null;
@@ -232,6 +246,7 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                                 data.get(msg,0,msg.length);                                
                                 this.reliableIncoming.put(id, msg);
                             } else {
+                            	Log.d(TAG,"Already received, resending ack for: " + id);
                             	//we've already had this packet so send a 2 more acks to make sure we don't get it again 
                             	this.SSSend(NetworkPacket.CreateReliableAck(id));
                             	this.SSSend(NetworkPacket.CreateReliableAck(id));
@@ -339,4 +354,6 @@ public class NetworkSubspace extends Network implements INetworkCallback {
         }
         return null;
     }
+
+
 }

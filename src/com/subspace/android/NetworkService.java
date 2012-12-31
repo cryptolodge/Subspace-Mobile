@@ -1,23 +1,30 @@
 package com.subspace.android;
 
+import java.io.IOException;
+
+import com.subspace.network.NetworkGame;
+import com.subspace.network.NetworkSubspace;
 import com.subspace.redemption.*;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
 public class NetworkService extends Service {
 
-     static final String TAG = "SubspaceNetworkService";
+     static final String TAG = "Subspace";
 	
 	 private NotificationManager mNM;
-
+	 private NetworkGame subspace;
 	
 	// Unique Identification Number for the Notification.
     // We use it on Notification start, and to cancel it.
@@ -29,7 +36,7 @@ public class NetworkService extends Service {
      * IPC.
      */
     public class LocalBinder extends Binder {
-    	NetworkService getService() {
+    	public NetworkService getService() {
             return NetworkService.this;
         }
     }
@@ -39,12 +46,14 @@ public class NetworkService extends Service {
         mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
         // Display a notification about us starting.  We put an icon in the status bar.
-        showNotification();
+      //  showNotification();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "Received start id " + startId + ": " + intent);
+               
+        
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
         return START_STICKY;
@@ -52,6 +61,18 @@ public class NetworkService extends Service {
 
     @Override
     public void onDestroy() {
+    	
+    	//disconnect if we are connected
+    	if(subspace.isConnected())
+    	{
+    		try {
+    			subspace.SSDisconnect();
+    		} catch(IOException ioe)
+    		{
+    			Log.e(TAG, Log.getStackTraceString(ioe));
+    		}
+    	}
+    	
         // Cancel the persistent notification.
         mNM.cancel(NOTIFICATION);
 
@@ -79,9 +100,13 @@ public class NetworkService extends Service {
         Notification notification = new Notification(R.drawable.icon, text,
                 System.currentTimeMillis());
 
-   /*     // The PendingIntent to launch our activity if the user selects this notification
+        Intent notificationIntent = new Intent(this, HomeActivity.class);
+        notificationIntent.addFlags(Notification.FLAG_ONGOING_EVENT);
+        // The PendingIntent to launch our activity if the user selects this notification
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, HomeActivities..Controller.class), 0);*/
+        		notificationIntent, 0);
+        
+        notification.contentIntent = contentIntent;
 
         // Set the info for the views that show in the notification panel.
         notification.setLatestEventInfo(this, 
@@ -93,5 +118,28 @@ public class NetworkService extends Service {
         mNM.notify(NOTIFICATION, notification);
     }
     
-	
+    public void Connect(String ipAddress, int port)
+    {
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	boolean logConnection =  prefs.getBoolean("pref_logConnection", true);
+		boolean logPackets =  prefs.getBoolean("pref_logPackets", true);		
+    	
+    	try {
+    		subspace = new NetworkGame();
+    		//setup logging as set in settings
+    		NetworkSubspace.LOG_CONNECTION = logConnection;
+    		NetworkSubspace.LOG_PACKETS = logPackets;
+    		
+    		
+			subspace.SSConnect(ipAddress,port);
+		} catch (Exception e) {
+			Log.e(TAG,Log.getStackTraceString(e)); 
+		}
+    }   
+    
+    public NetworkGame getSubspace()
+    {
+    	return subspace;
+    }
+    	
 }

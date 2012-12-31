@@ -73,7 +73,7 @@ public class ZonesActivity extends ListActivity  {
     }
 
     
-    private class DownloadZonesTask extends AsyncTask<String, String,ArrayList<DirectoryZone>> {
+    private class DownloadZonesTask extends AsyncTask<String, String,ArrayList<DirectoryZone>> implements IDownloadUpdateCallback {
     	private ProgressDialog _dialog;
     	private Activity _activity;
     	public DownloadZonesTask(Activity activity)
@@ -84,10 +84,15 @@ public class ZonesActivity extends ListActivity  {
     	}
     	
         protected void onPreExecute() {
-            _dialog.setMessage("Progress start");
+            _dialog.setMessage("Staring Download of Zone");
             _dialog.show();
         }
         
+		@Override
+		public void Update(int bytesProgress, int bytesTotal) {			
+			float percentage = (float)bytesProgress / (float)bytesTotal * 100f;
+			this.publishProgress("Download Progress " + Math.round(percentage) + "%  ("+ bytesProgress + "/" +bytesTotal+")" );
+		}
         
         @Override
 		protected void onProgressUpdate(String... progress) {
@@ -103,6 +108,7 @@ public class ZonesActivity extends ListActivity  {
         	ArrayList<DirectoryZone> zones =null;
         	try {		
         		NetworkDirectory nd = new NetworkDirectory();
+        		nd.setDownloadUpdateCallback(this);
         		zones = nd.Download(server[0]);
         		//sort by player count
         		Collections.sort(zones, new Comparator<DirectoryZone>(){
@@ -150,6 +156,8 @@ public class ZonesActivity extends ListActivity  {
                 _dialog.dismiss();
             }
         }
+
+
 
 
     }

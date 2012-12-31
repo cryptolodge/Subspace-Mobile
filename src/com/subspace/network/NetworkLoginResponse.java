@@ -22,6 +22,8 @@ REVISIONS:
 
 package com.subspace.network;
 
+import java.nio.ByteBuffer;
+
 	/*
 		0x0A	Password Packet Response
 
@@ -96,4 +98,15 @@ public class NetworkLoginResponse {
         RegistrationFormRequest = regForm;
         NewsChecksum = news;
     }
+    
+    public NetworkLoginResponse(ByteBuffer buffer)
+    {
+    	ResponseCode = buffer.get(1);
+    	ServerVersion = buffer.getInt(2);
+    	EXEChecksum = buffer.getInt(10);
+    	RegistrationFormRequest = (boolean)(buffer.get(19) != 0);
+    	NewsChecksum = buffer.getInt(24);
+    	
+    }
+    
 }

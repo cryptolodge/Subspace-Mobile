@@ -73,7 +73,11 @@ public class NetworkDirectory extends NetworkSubspace implements INetworkCallbac
         //decrypt
         data = super.Recv(data, decrypt);
         //analyse
-        if (data != null) {
+        if (data != null) {        	
+        	if(LOG_PACKETS)
+        	{
+        		Log.v(TAG,"Zone Download Stream " + Util.ToHex(data));
+        	}
             try {
                 if (data.get(0) == NetworkPacket.DIRECTORY_REQUEST) {
                     //its saved in the array file                    
@@ -130,8 +134,7 @@ public class NetworkDirectory extends NetworkSubspace implements INetworkCallbac
                 }
             } catch (Exception e) {
             	Log.e(TAG, Log.getStackTraceString(e)); 
-            }
-            Log.v(TAG,Util.ToHex(data));
+            }            
         }
         return null;
     }

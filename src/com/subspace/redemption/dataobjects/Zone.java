@@ -1,5 +1,7 @@
 package com.subspace.redemption.dataobjects;
 
+import android.database.Cursor;
+
 import com.subspace.network.DirectoryZone;
 
 public class Zone {
@@ -24,5 +26,14 @@ public class Zone {
 
 	public Zone() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public Zone(Cursor cursor) {
+        this.Id = Integer.parseInt(cursor.getString(cursor.getColumnIndex("id")));
+        this.Name = cursor.getString(cursor.getColumnIndex("name"));
+        this.Description = cursor.getString(cursor.getColumnIndex("description"));
+        this.Ip = cursor.getString(cursor.getColumnIndex("ip"));
+        this.Port = Integer.parseInt(cursor.getString(cursor.getColumnIndex("port")));
+        this.IsCustom = Integer.parseInt(cursor.getString(cursor.getColumnIndex("iscustom")));
 	}
 }

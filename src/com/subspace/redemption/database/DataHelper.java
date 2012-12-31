@@ -61,13 +61,9 @@ public class DataHelper {
 		    // looping through all rows and adding to list
 		    if (cursor.moveToFirst()) {
 		        do {
-		            Zone zone = new Zone();
-		            zone.Id = Integer.parseInt(cursor.getString(0));
-		            zone.Name = cursor.getString(1);
-		            zone.Description = cursor.getString(2);
-		            zone.Ip = cursor.getString(3);
-		            zone.Port = Integer.parseInt(cursor.getString(4));
-		            zone.IsCustom = Integer.parseInt(cursor.getString(5));
+		            Zone zone = new Zone(cursor);
+		            
+
 		            // Adding contact to list
 		            zoneList.add(zone);
 		        } while (cursor.moveToNext());
@@ -75,6 +71,23 @@ public class DataHelper {
 		 
 		    // return contact list
 		    return zoneList;
+		}
+	   
+	   public Zone getZone(int selectedZoneId) {
+		   Zone zone = null;
+		   // Select All Query
+		    String selectQuery = "SELECT id,name,description,ip,port,iscustom FROM " + TBL_ZONE 
+		    + " WHERE Id = " + selectedZoneId;
+		 
+		    Cursor cursor = db.rawQuery(selectQuery, null);
+		 		    
+		    if (cursor.moveToFirst()) {
+		       	  zone = new Zone(cursor);
+		    }
+		 
+		    cursor.close();		    
+		    // return contact list
+		    return zone;
 		}
 	   
 	   public void clearZones() {		  
@@ -106,6 +119,8 @@ public class DataHelper {
 	   	         onCreate(db);
 	   	      }
 	   }
+
+	
 }
 	   
 
