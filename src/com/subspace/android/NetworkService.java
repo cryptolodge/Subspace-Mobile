@@ -122,13 +122,15 @@ public class NetworkService extends Service {
     {
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     	boolean logConnection =  prefs.getBoolean("pref_logConnection", true);
-		boolean logPackets =  prefs.getBoolean("pref_logPackets", true);		
+		boolean logCorePackets =  prefs.getBoolean("pref_logCorePackets", true);
+		boolean logGamePackets =  prefs.getBoolean("pref_logGamePackets", true);	
     	
     	try {
     		subspace = new NetworkGame();
     		//setup logging as set in settings
-    		NetworkSubspace.LOG_CONNECTION = logConnection;
-    		NetworkSubspace.LOG_PACKETS = logPackets;
+    		NetworkGame.LOG_CONNECTION = logConnection;    		
+    		NetworkGame.LOG_CORE_PACKETS = logCorePackets;
+    		NetworkGame.LOG_GAME_PACKETS = logGamePackets;
     		
     		
 			subspace.SSConnect(ipAddress,port);

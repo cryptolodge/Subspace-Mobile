@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 REVISIONS:
  */
 
-package com.subspace.network;
+package com.subspace.network.messages;
 
 import java.nio.ByteBuffer;
 
@@ -84,13 +84,13 @@ import java.nio.ByteBuffer;
 		*4  - Compare against local News.txt to determine if there is a new
 			News.txt to be downloaded.
 	*/
-public class NetworkLoginResponse {
+public class LoginResponse {
     public final byte ResponseCode;
     public final int ServerVersion;
     public final int EXEChecksum;
     public final boolean RegistrationFormRequest;
     public final int NewsChecksum;
-    public NetworkLoginResponse(byte code, int version, int exe, boolean regForm, int news)
+    public LoginResponse(byte code, int version, int exe, boolean regForm, int news)
     {
         ResponseCode = code;
         ServerVersion = version;
@@ -99,7 +99,7 @@ public class NetworkLoginResponse {
         NewsChecksum = news;
     }
     
-    public NetworkLoginResponse(ByteBuffer buffer)
+    public LoginResponse(ByteBuffer buffer)
     {
     	ResponseCode = buffer.get(1);
     	ServerVersion = buffer.getInt(2);

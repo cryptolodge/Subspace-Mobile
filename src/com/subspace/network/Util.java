@@ -57,12 +57,17 @@ public final class Util {
 	   return ToHex(data);
     }
     
-    public static String GetString(ByteBuffer bb, int index, int length, String encoding) throws UnsupportedEncodingException
+    public static String GetString(ByteBuffer bb, int index, int length, String encoding)
     {
-    	bb.position(index);
-    	byte[] bytearr = new byte[length];    	
-    	bb.get(bytearr,0,length);
-    	return new String(bytearr,encoding);     	
+    	try{
+	    	bb.position(index);
+	    	byte[] bytearr = new byte[length];    	
+	    	bb.get(bytearr,0,length);
+	    	return new String(bytearr,encoding);
+    	} catch(UnsupportedEncodingException e)
+    	{
+    		return "Error Descoding string " + encoding;
+    	}
     }
 
     private static final int[] CRC32_TABLE = {

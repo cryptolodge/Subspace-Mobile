@@ -10,6 +10,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="Debug" android:summary="Debug">
         <CheckBoxPreference android:key="pref_logConnection" android:title="Log Connection" android:defaultValue="true"/>
-        <CheckBoxPreference android:key="pref_logPackets" android:title="Log Packets" android:defaultValue="false"/>
+        <CheckBoxPreference android:key="pref_logCorePackets" android:title="Log Core Packets" android:defaultValue="false"/>
+        <CheckBoxPreference android:key="pref_logGamePackets" android:title="Log Game Packets"/>
     </PreferenceCategory>
 </PreferenceScreen>

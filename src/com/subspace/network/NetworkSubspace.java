@@ -43,7 +43,7 @@ u32 timestamp;
  */
 public class NetworkSubspace extends Network implements INetworkCallback {	
 	//these can be set via preferences
-	public static boolean LOG_PACKETS = false;
+	public static boolean LOG_CORE_PACKETS = false;
 	public static boolean LOG_CONNECTION = true;
 	
 	private static final String TAG = "Subspace";
@@ -144,7 +144,7 @@ public class NetworkSubspace extends Network implements INetworkCallback {
             //if not connected pass to encryption handler
             if (!this.connected && (data.get(0) == NetworkPacket.CORE)) {
             	 //log packets
-                if(LOG_PACKETS)
+                if(LOG_CORE_PACKETS)
                 {
                 	Log.v(TAG,Util.ToHex(data));
                 }
@@ -194,7 +194,7 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                 }
                 
                 //log packets
-                if(LOG_PACKETS)
+                if(LOG_CORE_PACKETS)
                 {
                 	Log.v(TAG,Util.ToHex(data));
                 }

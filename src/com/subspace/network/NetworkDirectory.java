@@ -74,7 +74,7 @@ public class NetworkDirectory extends NetworkSubspace implements INetworkCallbac
         data = super.Recv(data, decrypt);
         //analyse
         if (data != null) {        	
-        	if(LOG_PACKETS)
+        	if(LOG_CORE_PACKETS)
         	{
         		Log.v(TAG,"Zone Download Stream " + Util.ToHex(data));
         	}

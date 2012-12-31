@@ -1,9 +1,12 @@
 package com.subspace.redemption;
 
 import com.subspace.android.NetworkService;
+import com.subspace.network.IGameCallback;
 import com.subspace.network.NetworkGame;
 import com.subspace.network.NetworkPacket;
 import com.subspace.network.NetworkSubspace;
+import com.subspace.network.messages.Chat;
+import com.subspace.network.messages.LoginResponse;
 import com.subspace.redemption.database.DataHelper;
 import com.subspace.redemption.dataobjects.Zone;
 
@@ -22,7 +25,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-public class ConnectActivity extends Activity{
+public class ConnectActivity extends Activity implements IGameCallback{
 	
 	static String TAG = "Subspace";
 	
@@ -41,25 +44,10 @@ public class ConnectActivity extends Activity{
 	        // service that we know is running in our own process, we can
 	        // cast its IBinder to a concrete class and directly access it.
 	    	networkService = ((NetworkService.LocalBinder)service).getService();
-	    	messageView.append(Html.fromHtml("<font color='green'>Network Service Connected.</font><br/>",null,null));
-	    	//lets begin our work now
-			messageView.append(Html.fromHtml("<font color='green'>Connecting to " 
-					+ zone.Name + " > " + zone.Ip + ":" + zone.Port + "</font><br/>",null,null));
-			//do a subspace connect please :)
-			networkService.Connect(zone.Ip, zone.Port);
-			messageView.append(Html.fromHtml("<font color='green'>Connected</font><br/>",null,null));
-			//now load subspace connection
-			subspace = networkService.getSubspace();
-			//		
-			try {
-				//lets begin our work now
-				messageView.append(Html.fromHtml("<font color='green'>Logging in...</font><br/>",null,null));
-				subspace.Login(false,"SubspaceMobile","SubspaceMobile");
-			} 
-			catch(Exception e)
-			{
-				Log.e(TAG,Log.getStackTraceString(e));
-			}	    }
+	    	
+	    	SubspaceConnect();
+	    	
+	   }
 
 	    public void onServiceDisconnected(ComponentName className) {
 	        // This is called when the connection with the service has been
@@ -114,6 +102,47 @@ public class ConnectActivity extends Activity{
 		//bind
 		doBindService();
 	}
+	
+	public void SubspaceConnect()
+	{
+		messageView.append(Html.fromHtml("<font color='green'>Network Service Connected.</font><br/>",null,null));
+    	//lets begin our work now
+		messageView.append(Html.fromHtml("<font color='green'>Connecting to " 
+				+ zone.Name + " > " + zone.Ip + ":" + zone.Port + "</font><br/>",null,null));
+		//do a subspace connect please :)
+		networkService.Connect(zone.Ip, zone.Port);
+		messageView.append(Html.fromHtml("<font color='green'>Connected</font><br/>",null,null));
+		//now load subspace connection
+		subspace = networkService.getSubspace();
+		subspace.setGameCallback(this);
+		//		
+		try {
+			//lets begin our work now
+			messageView.append(Html.fromHtml("<font color='green'>Logging in...</font><br/>",null,null));
+			LoginResponse response = subspace.Login(false,"SubspaceMobile","SubspaceMobile");
+			if(response!=null)
+			{
+			messageView.append(Html.fromHtml(String.format("<font color='green'>%1 %2 %3 %4 %5</font><br/>"
+					,response.ResponseCode, response.EXEChecksum, response.NewsChecksum, response.ServerVersion
+					)
+					,null,null));
+			}
+		} 
+		catch(Exception e)
+		{
+			Log.e(TAG,Log.getStackTraceString(e));
+		}	 	
+		
+	}
+	
+	@Override
+	public void ChatMessageReceived(Chat message) {
+		messageView.append(Html.fromHtml(String.format("<font color='green'>%1 %2</font><br/>"
+				,message.Type, message.Message
+				)
+				,null,null));
+	}
+    
     
 	void doBindService() {
 	    // Establish a connection with the service.  We use an explicit
@@ -138,5 +167,6 @@ public class ConnectActivity extends Activity{
 	    super.onDestroy();
 	    doUnbindService();
 	}
-    
+
+
 }

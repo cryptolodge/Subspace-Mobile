@@ -28,6 +28,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 
+import com.subspace.network.messages.*;
+
 import android.util.Log;
 
 /**
@@ -39,14 +41,20 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
     public static boolean LOG_GAME_PACKETS = true;
     
     boolean loginResponseReceived = false;
-    NetworkLoginResponse loginResponse = null;
+    LoginResponse loginResponse = null;
+    
+    IGameCallback gameCallback;
 
     public NetworkGame() {
         super();
         this.setCallback(this);
     }
+    
+    public final void setGameCallback(IGameCallback callback) {
+        this.gameCallback = callback;
+    }
 
-    public NetworkLoginResponse Login(Boolean isNewUser, String username, String password) throws IOException {
+    public LoginResponse Login(Boolean isNewUser, String username, String password) throws IOException {
     	loginResponseReceived = false;
     	loginResponse = null;
         try {
@@ -82,18 +90,27 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
         	{
         		Log.v(TAG,"Game: " + Util.ToHex(data));
         	}
-            try {
+            try {            	
                 if (data.get(0) == NetworkPacket.S2C_PASSWORDACK) {
-                	Log.d(TAG, "Passwork ACK");
+                	Log.d(TAG, "S2C_PASSWORDACK");
                     //its saved in the array file                    
                     
-                	loginResponse = new NetworkLoginResponse(data);
+                	loginResponse = new LoginResponse(data);
                                         
                     //notify completion of task
                     synchronized (this) {
                     	loginResponseReceived = true;
                         this.notify();
                     }
+                }
+                if(data.get(0) == NetworkPacket.S2C_ChatMessage) {
+                	Log.d(TAG, "S2C_ChatMessage");
+                	
+                	Chat chatMessage = new Chat(data);
+                	if(gameCallback!=null)
+                	{
+                		gameCallback.ChatMessageReceived(chatMessage);
+                	}                	
                 }
             } catch (Exception e) {
             	Log.e(TAG, Log.getStackTraceString(e)); 
