@@ -25,6 +25,8 @@ package com.subspace.network;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import com.subspace.snrrrub.Checksum;
+
 /**
  *
  * @author Kingsley
@@ -61,6 +63,7 @@ public class NetworkPacket {
     public static final byte C2S_SPECTATEPLAYER = 0x08;    
     public static final byte C2S_PASSWORD = 0x09;
     public static final byte C2S_MAPREQUEST = 0x0C;
+    public static final byte C2S_SECURITYCHECKSUM = 0x1A;
     //game s2c
     public static final byte S2C_MY_UID = 0x01;
     public static final byte S2C_NOW_IN_GAME = 0x02;
@@ -372,7 +375,7 @@ public class NetworkPacket {
                   what dictates if you should send them or not.
      * 
      */
-	public static ByteBuffer Position(
+	public static ByteBuffer CreatePosition(
 			short xPos,
 			short yPos,
 			byte direction,
@@ -408,6 +411,41 @@ public class NetworkPacket {
 		bb.put(10,checksum);//checksum 
 		
 		// TODO Auto-generated method stub
+		return bb;
+	}
+
+	
+	/*
+	 *   0x1A  Security checksum *1
+ 
+            Offset      Length      Description
+            0           1           Type Byte 0x1A
+            1           4           Weapon Count
+            5           4           Settings Checksum *2
+            9           4           Subspace.EXE Checksum
+            13          4           Map.LVL Checksum
+            17          4           S2CSlowTotal
+            21          4           S2CFastTotal
+            25          2           S2CSlowCurrent
+            27          2           S2CFastCurrent
+            29          2           S2CRelOut (?Unsure?)
+            31          2           Ping
+            33          2           Ping Average
+            35          2           Ping Low
+            37          2           Ping High
+            39          1           Slow Frame Detected (Boolean)
+ 
+            *1 - The checksums are generated after a server-sent seed
+ 
+            *2 - Settings checksum is the checksum of the contents of the settings packet
+	 */
+	public static ByteBuffer CreateSecurityChecksum(int key) {
+		ByteBuffer bb = CreatePacket(40, C2S_SECURITYCHECKSUM);
+		//generate checksums
+		bb.putInt(5,0);
+		bb.putInt(9,Checksum.EXEChecksum(key));
+		bb.putInt(13,0);
+			
 		return bb;
 	}
 

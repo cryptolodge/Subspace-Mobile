@@ -175,12 +175,12 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					Log.d(TAG, "S2C_FlagPosition");
 				} else if (data.get(0) == NetworkPacket.S2C_ChecksumRecv) {
 					Log.d(TAG, "S2C_ChecksumRecv");							
-					SynchronizationRequest syncRequest = new SynchronizationRequest(data);
-					
+					SynchronizationRequest syncRequest = new SynchronizationRequest(data);					
+					SSSend(NetworkPacket.CreateSecurityChecksum(syncRequest.ChecksumKey));					
 				} else if (data.get(0) == NetworkPacket.S2C_KeepAlive) {
 					Log.d(TAG, "S2C_KeepAlive");					
 					//send postion
-					SSSend(NetworkPacket.Position(
+					SSSend(NetworkPacket.CreatePosition(
 							(short)0,
 							(short)0,
 							(byte)0,
