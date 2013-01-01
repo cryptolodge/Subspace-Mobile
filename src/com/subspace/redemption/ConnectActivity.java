@@ -1,5 +1,6 @@
 package com.subspace.redemption;
 
+import com.subspace.android.Information;
 import com.subspace.android.NetworkService;
 import com.subspace.network.IGameCallback;
 import com.subspace.network.NetworkGame;
@@ -7,6 +8,7 @@ import com.subspace.network.NetworkPacket;
 import com.subspace.network.NetworkSubspace;
 import com.subspace.network.messages.Chat;
 import com.subspace.network.messages.LoginResponse;
+import com.subspace.network.messages.MapInformation;
 import com.subspace.redemption.database.DataHelper;
 import com.subspace.redemption.dataobjects.Zone;
 
@@ -15,11 +17,15 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.text.Html;
 import android.util.Log;
+import android.view.Display;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -35,6 +41,10 @@ public class ConnectActivity extends Activity implements IGameCallback{
 	Zone zone;
 	boolean networkIsBound;
 	DataHelper db;
+	
+
+
+
 	
 	ServiceConnection networkServiceConnection = new ServiceConnection() {
 	    public void onServiceConnected(ComponentName className, IBinder service) {
@@ -80,6 +90,13 @@ public class ConnectActivity extends Activity implements IGameCallback{
    		}
    		
    		zone = db.getZone(selectedZoneId);
+   		
+   		//now load information
+   		
+   		Display display = getWindowManager().getDefaultDisplay();
+   		
+   		Information.ScreenWidth = (short) display.getWidth();
+   		Information.ScreenHeight = (short) display.getHeight();
     }
 
 	@Override
@@ -122,10 +139,8 @@ public class ConnectActivity extends Activity implements IGameCallback{
 			LoginResponse response = subspace.Login(false,"SubspaceMobile","SubspaceMobile");
 			if(response!=null)
 			{
-			messageView.append(Html.fromHtml(String.format("<font color='green'>%1 %2 %3 %4 %5</font><br/>"
-					,response.ResponseCode, response.EXEChecksum, response.NewsChecksum, response.ServerVersion
-					)
-					,null,null));
+				messageView.append(Html.fromHtml("<font color='green'>Login Success</font><br/>",null,null));	
+				subspace.EnterArena();
 			}
 		} 
 		catch(Exception e)
@@ -137,11 +152,48 @@ public class ConnectActivity extends Activity implements IGameCallback{
 	
 	@Override
 	public void ChatMessageReceived(Chat message) {
-		messageView.append(Html.fromHtml(String.format("<font color='green'>%1 %2</font><br/>"
-				,message.Type, message.Message
-				)
-				,null,null));
+		UpdateChat("<font color='green'>" + message.Type + " " + message.Message + "</font><br/>");
 	}
+	
+	@Override
+	public void NowInGameRecieved() {
+		UpdateChat("<font color='green'>Now in game</font><br/>");		
+	}
+
+	@Override
+	public void PlayerIdRecieved(int id) {
+		UpdateChat("<font color='green'>PlayerIdRecieved  " + id + "</font><br/>");		
+	}
+	
+	@Override
+	public void MapInformationRecieved(MapInformation mapInformation) {
+		UpdateChat("<font color='green'>PlayerIdRecieved  "
+	+ mapInformation.Filename + " " 
+				+ mapInformation.CRC32 + "</font><br/>");		
+		
+	}
+
+
+	private void UpdateChat(String msg)
+	{
+		//update chat
+				Message myMessage=new Message();
+				Bundle resBundle = new Bundle();
+				resBundle.putString("message", msg);
+						
+				myMessage.setData(resBundle);
+				handler.sendMessage(myMessage);
+	
+	}
+	
+	private Handler handler = new Handler() {
+		@Override
+		
+			public void handleMessage(Message msg) {			
+				messageView.append(Html.fromHtml(msg.getData().getString("message"),null,null));
+			}
+		
+		};
     
     
 	void doBindService() {
@@ -167,6 +219,8 @@ public class ConnectActivity extends Activity implements IGameCallback{
 	    super.onDestroy();
 	    doUnbindService();
 	}
+
+
 
 
 }

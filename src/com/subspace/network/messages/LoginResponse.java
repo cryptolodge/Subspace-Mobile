@@ -84,15 +84,23 @@ import java.nio.ByteBuffer;
 		*4  - Compare against local News.txt to determine if there is a new
 			News.txt to be downloaded.
 	*/
+
+
+
 public class LoginResponse {
+	
     public final byte ResponseCode;
+    public final LoginResponseCode Response;
     public final int ServerVersion;
     public final int EXEChecksum;
     public final boolean RegistrationFormRequest;
     public final int NewsChecksum;
+    
+    
     public LoginResponse(byte code, int version, int exe, boolean regForm, int news)
     {
         ResponseCode = code;
+        Response = LoginResponseCode.fromCode(ResponseCode);
         ServerVersion = version;
         EXEChecksum = exe;
         RegistrationFormRequest = regForm;
@@ -102,6 +110,7 @@ public class LoginResponse {
     public LoginResponse(ByteBuffer buffer)
     {
     	ResponseCode = buffer.get(1);
+    	Response = LoginResponseCode.fromCode(ResponseCode);
     	ServerVersion = buffer.getInt(2);
     	EXEChecksum = buffer.getInt(10);
     	RegistrationFormRequest = (boolean)(buffer.get(19) != 0);

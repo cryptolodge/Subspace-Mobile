@@ -54,6 +54,11 @@ public class NetworkPacket {
     public static final byte DIRECTORY_RESPONSE = 0x01;
     //game c2s
     public static final byte C2S_ARENALOGIN = 0x01;
+    public static final byte C2S_LEAVEARENA = 0x02;
+    public static final byte C2S_POSITION = 0x03;
+    public static final byte C2S_DEATH = 0x05;
+    public static final byte C2S_CHAT = 0x06;
+    public static final byte C2S_SPECTATEPLAYER = 0x08;    
     public static final byte C2S_PASSWORD = 0x09;
     public static final byte C2S_MAPREQUEST = 0x0C;
     //game s2c
@@ -235,36 +240,176 @@ public class NetworkPacket {
 
          *1 - Set to 0xFFFF for Random Pub,
         or 0xFFFD for Specific Sub (Must provide name).
-         */
+    
+    //ship types
+    
+        WARBIRD = 0
+        JAVELIN = 1
+        SPIDER = 2
+        LEVIATHAN = 3
+        TERRIER = 4
+        WEASEL = 5
+        LANCASTER = 6
+        SHARK = 7
+        SPECTATOR = 8
+             */
     // </editor-fold>
-    public static ByteBuffer ArenaLogin(byte shiptype, short xres, short yres, String arena) {
+    public static ByteBuffer CreateArenaLogin(byte shiptype, short xres, short yres, String arena) {
         try {
             ByteBuffer bb;
-            if(arena!=null) {
+            if(arena!=null)
+            {
                 bb = CreatePacket(25, C2S_ARENALOGIN);
-            } else {
+            }
+            else 
+            {
                 bb = CreatePacket(10, C2S_ARENALOGIN);
             }
             bb.put(1, shiptype);
             bb.putShort(2, (short) 0); //disable sound
             bb.putShort(4, xres);
             bb.putShort(6, yres);
-            if (arena == null || arena.length() == 0) {
+            if (arena == null || arena.length() == 0)
+            {
                 bb.putShort(8, (short) 0xFFFF);
-            } else {
+            }
+            else
+            {
                 bb.putShort(8, (short) 0xFFFD);
             }
             if(arena!=null)
-                bb.position(10); bb.put(arena.getBytes(CHARSET));
+            {
+                bb.position(10); 
+                bb.put(arena.getBytes(CHARSET));
+            }
             return bb;
-        } catch (Exception e) {
+        }
+        catch (Exception e) 
+        {
             e.printStackTrace();
             return null;
         }
     }
-    public static ByteBuffer MapRequest()
+    public static ByteBuffer CreateMapRequest()
     {
          ByteBuffer bb = CreatePacket(1, C2S_MAPREQUEST);
          return bb;
     }
+
+    /*
+     * 0x03  Position packet
+ 
+            Offset      Length      Description
+              0           1           Type Byte 0x03
+            1           1           Direction   (0 ... 360)
+            2           4           Timestamp
+            6           2           X Velocity
+            8           2           Y Pixels    (0 ... 16384)
+            10          1           Checksum
+            11          1           Togglables *1
+            12          2           X Pixels    (0 ... 16384)
+            14          2           Y Velocity
+            16          2           Bounty
+            18          2           Energy
+            20          2           Weapon Info *2
+ 
+            22          2           Energy *4         (Optional)
+            24          2           S2C Latency *4    (Optional)
+            26          2           Timer *4          (Optional)
+            28          4           Item info *3 *4   (Optional)
+ 
+            *1 - Togglables:
+                  Each value is one bit in a byte
+                  Bit 1   - Stealth
+                  Bit 2   - Cloak
+                  Bit 4   - XRadar
+                  Bit 8   - Antiwarp
+                  Bit 16  - Flash (Play the cloak/warp flash)
+                  Bit 32  - Safety (In safe)
+                  Bit 64  - UFO (Using UFO)
+                  Bit 128 - ?
+ 
+            *2 - Weapon info:
+                  Unsigned Integer Values or Booleans
+ 
+                  Weapon type             :5 bits *a1
+                  Weapon level            :2 bits
+                  Bouncing (Boolean)      :1 bit
+                  EMP (Boolean)           :1 bit
+                  Is bomb (Boolean)       :1 bit
+                  Shrapnel                :5 bits
+                  Alternate (Boolean)     :1 bit *a2
+                 
+ 
+                  *a1 - Weapon types:
+                        0x00 - None
+                        0x01 - Bullet
+                        0x02 - Bouncing bullet
+                        0x03 - Bomb
+                        0x04 - Proximity bomb
+                        0x05 - Repel
+                        0x06 - Decoy
+                        0x07 - Burst
+                        0x08 - Thor
+ 
+                  *a2 - (Bombs -> Mines; Bullets -> Multifire)
+ 
+            *3 - Item info:
+                  Unsigned Integer Values or Booleans
+ 
+                  Shields (Boolean) :1 bit
+                  Super (Boolean)   :1 bit
+                  Burst Count       :4 bits
+                  Repel Count       :4 bits
+                  Thor Count        :4 bits
+                  Brick Count       :4 bits
+                  Decoy Count       :4 bits
+                  Rocket Count      :4 bits
+                  Portal Count      :4 bits
+                  ? Unknown         :2 bits
+ 
+            *4 - These are supposed to be optional, but I'm not certain
+                  what dictates if you should send them or not.
+     * 
+     */
+	public static ByteBuffer Position(
+			short xPos,
+			short yPos,
+			byte direction,
+			short xV,
+			short yV,			
+			short bounty,
+			short energy,
+			short weapon,
+			byte togglables
+			) {
+				
+		ByteBuffer bb = CreatePacket(22, C2S_POSITION);
+		
+		byte checksum = 0;		
+		
+        bb.put(1, direction);
+        bb.putInt(2, Util.GetTickCount()); //timestamp
+        bb.putShort(6,xV);
+        bb.putShort(8,yPos);
+		bb.put(11, togglables);
+		bb.putShort(12,xPos);
+		bb.putShort(14,yV);
+		bb.putShort(16,bounty);
+		bb.putShort(18,energy);
+		bb.putShort(20,weapon);		
+
+		//now add checksum
+		
+		for( int i=0; i<22; i++ ){
+            checksum ^= bb.get(i);
+        }
+		
+		bb.put(10,checksum);//checksum 
+		
+		// TODO Auto-generated method stub
+		return bb;
+	}
+
+
 }

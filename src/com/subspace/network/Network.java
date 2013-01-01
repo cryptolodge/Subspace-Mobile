@@ -31,7 +31,7 @@ import java.nio.channels.DatagramChannel;
 import android.util.Log;
 
 public abstract class Network implements Runnable {
-   private static final boolean LOG_PACKETS = false;
+   private static final boolean LOG_RAW_PACKETS = false;
    private static final String TAG = "Subspace";
    private static final int MAX_UDP_PACKETSIZE = 512;
    
@@ -81,7 +81,7 @@ public abstract class Network implements Runnable {
 	               //flip buffer
 	               buffer.flip();	                      
 	               //verbose
-	               if(LOG_PACKETS)
+	               if(LOG_RAW_PACKETS)
             	   {
 	            	   Log.v(TAG, "R:" + Util.ToHex(buffer));	               
 	               }
@@ -98,7 +98,7 @@ public abstract class Network implements Runnable {
 	   //rewind
 	   buffer.rewind();
 	   //verbose
-	   if(LOG_PACKETS)
+	   if(LOG_RAW_PACKETS)
 	   {
 		   Log.v(TAG, "S:" + Util.ToHex(buffer));
 	   }

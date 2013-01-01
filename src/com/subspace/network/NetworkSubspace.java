@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.util.Log;
 import android.util.SparseArray;
@@ -61,7 +63,8 @@ public class NetworkSubspace extends Network implements INetworkCallback {
     int reliableNextOutbound;
     int reliableNextExpected;
     SparseArray<byte[]> reliableIncoming;
-    SparseArray<byte[]> reliableOutgoing;
+    HashMap<Integer, byte[]> reliableOutgoing;
+    Timer reliableResendTimer  = new Timer();
     //chunked message
     byte[] chunkArray = null;
     //stream
@@ -82,7 +85,29 @@ public class NetworkSubspace extends Network implements INetworkCallback {
         reliableNextOutbound = 0;
         reliableNextExpected = 0;
         reliableIncoming = new SparseArray<byte[]>();
-        reliableOutgoing = new SparseArray<byte[]>();
+        reliableOutgoing = new HashMap<Integer,byte[]>();
+        reliableResendTimer.scheduleAtFixedRate(new TimerTask()
+        {
+			public void run() {
+				if (reliableOutgoing.size() > 0) {
+					// resend any in queue
+					Log.d(TAG, "Resending Packets " + reliableOutgoing.size());
+
+					for (byte[] bytes : reliableOutgoing.values()) {
+
+						ByteBuffer bb = ByteBuffer.wrap(bytes);
+						bb.order(ByteOrder.LITTLE_ENDIAN);
+						try {
+							SSSend(bb);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							Log.e(TAG, Log.getStackTraceString(e));
+						}
+					}
+				}
+			}
+
+        }, 1000, 1000); // resend every second
     }
 
     public final void setDownloadUpdateCallback(IDownloadUpdateCallback callback) {
@@ -121,18 +146,40 @@ public class NetworkSubspace extends Network implements INetworkCallback {
         this.SSSend(NetworkPacket.CreateDisconnect());
     }
 
-    public final void SSSend(ByteBuffer buffer) throws IOException {    	
+    public final void SSSend(ByteBuffer buffer) throws IOException {    
+    	if(LOG_CORE_PACKETS)
+        {
+    		 Log.v(TAG,"CS: " + Util.ToHex(buffer));
+        }
     	buffer.rewind();
         enc.Encrypt(buffer);
         this.Send(buffer);
     }
 
     public final void SSSendReliable(ByteBuffer bytes) throws IOException {
-        this.SSSend(NetworkPacket.CreateReliable(reliableNextOutbound, bytes));
+    	if(LOG_CORE_PACKETS)
+        {
+    		 Log.d(TAG,"Sent Reliable packet " + reliableNextOutbound);
+        }
+    	ByteBuffer reliablePacket = NetworkPacket.CreateReliable(reliableNextOutbound, bytes);
+    	reliablePacket.rewind();
+    	//save into array
+    	byte[] msg = new byte[reliablePacket.limit()];
+        //read into msg
+    	reliablePacket.get(msg,0,msg.length); 
+    	reliablePacket.rewind();
+    	//save to check if we've received        
+    	reliableOutgoing.put(reliableNextOutbound,msg);
+    	//now send
+        this.SSSend(reliablePacket);
         reliableNextOutbound++;
     }
 
     public final void SSSync() throws IOException {
+    	if(LOG_CORE_PACKETS)
+        {
+    		 Log.d(TAG,"Sent Sync packet");
+        }
         this.SSSend(NetworkPacket.CreateSync(this.getRecvDatagramCount(), this.getSentDatagramCount()));
     }
 
@@ -196,7 +243,7 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                 //log packets
                 if(LOG_CORE_PACKETS)
                 {
-                	Log.v(TAG,Util.ToHex(data));
+                	Log.v(TAG,"CR: " + Util.ToHex(data));
                 }
                 
                 byte packetType = data.get(); 
@@ -254,21 +301,35 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                             }
                         }
 
-                        case NetworkPacket.CORE_RELIABLEACK: {
-                            Integer id = Integer.valueOf(data.getInt(2));
-                            reliableOutgoing.remove(id);
+                        case NetworkPacket.CORE_RELIABLEACK: {        
+                        	if(LOG_CORE_PACKETS)
+                            {
+                        		Log.d(TAG,"CORE_RELIABLEACK " + data.getInt(2));                       		
+                            }
+                            reliableOutgoing.remove(data.getInt(2));
                             break;
                         }
                         case NetworkPacket.CORE_SYNC: {
+                        	if(LOG_CORE_PACKETS)
+                            {
+                        		Log.d(TAG,"CORE_SYNC");                       		
+                            }
                             //send back ack
                             this.SSSend(NetworkPacket.CreateSyncResponse(data.getInt(2)));
                             break;
                         }
                         case NetworkPacket.CORE_SYNCACK: {
-                            //do nothing
+                        	if(LOG_CORE_PACKETS)
+                            {
+                        		Log.d(TAG,"CORE_SYNCACK");                       		
+                            }
                             break;
                         }
                         case NetworkPacket.CORE_DISCONNECT:
+                        	if(LOG_CORE_PACKETS)
+                            {
+                        		Log.d(TAG,"CORE_DISCONNECT");                       		
+                            }
                             SSDisconnect();
                             return null;
                         case NetworkPacket.CORE_CHUNK: {

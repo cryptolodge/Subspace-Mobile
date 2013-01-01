@@ -57,12 +57,16 @@ public final class Util {
 	   return ToHex(data);
     }
     
-    public static String GetString(ByteBuffer bb, int index, int length, String encoding)
+	public static String GetString(ByteBuffer buffer, int index, int length) {		
+		return  GetString(buffer, index, length, "ISO-8859-1");
+	}
+    
+    public static String GetString(ByteBuffer buffer, int index, int length, String encoding)
     {
     	try{
-	    	bb.position(index);
+    		buffer.position(index);
 	    	byte[] bytearr = new byte[length];    	
-	    	bb.get(bytearr,0,length);
+	    	buffer.get(bytearr,0,length);
 	    	return new String(bytearr,encoding);
     	} catch(UnsupportedEncodingException e)
     	{
@@ -189,5 +193,7 @@ public final class Util {
             }
         }
     }
+
+
 
 }

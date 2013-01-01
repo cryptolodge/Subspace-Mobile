@@ -132,6 +132,9 @@ public class NetworkService extends Service {
     		NetworkGame.LOG_CORE_PACKETS = logCorePackets;
     		NetworkGame.LOG_GAME_PACKETS = logGamePackets;
     		
+    		//temp local test
+    		ipAddress= "192.168.1.100";
+    		port = 5000;
     		
 			subspace.SSConnect(ipAddress,port);
 		} catch (Exception e) {
