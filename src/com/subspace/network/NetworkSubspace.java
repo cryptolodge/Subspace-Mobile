@@ -76,7 +76,7 @@ public class NetworkSubspace extends Network implements INetworkCallback {
     int streamCount = 0;    // Handles chunk pkt sizes
     File streamFileCache;
     FileOutputStream streamFileOutputStream;
-    IDownloadUpdateCallback streamCallback;
+    ISubspaceCallback subspaceCallback;
 
     protected Context _context;
     
@@ -127,8 +127,8 @@ public class NetworkSubspace extends Network implements INetworkCallback {
         }, 1000, 1000); // resend every second
     }
 
-    public final void setDownloadUpdateCallback(IDownloadUpdateCallback callback) {
-        this.streamCallback = callback;
+    public final void setDownloadCallback(ISubspaceCallback callback) {
+        this.subspaceCallback = callback;
     }
 
     public final boolean SSConnect(String host, int port) throws IOException {
@@ -268,9 +268,9 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                 	}
                 }
                 
-                byte packetType = data.get(); 
+                byte packetType = data.get(0); 
                 if (packetType == NetworkPacket.CORE) {
-                	byte corePacketType = data.get();
+                	byte corePacketType = data.get(1);
                     switch (corePacketType) {
                         case NetworkPacket.CORE_RELIABLE: {
                             
@@ -278,8 +278,10 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                             //send ack twice
                             this.SSSend(NetworkPacket.CreateReliableAck(id));   
                             this.SSSend(NetworkPacket.CreateReliableAck(id));
-                            Log.d(TAG,"New Reliable Packet Received: " + id);
-
+                            if(LOG_CORE_PACKETS)
+                            {
+                            	Log.d(TAG,"New Reliable Packet Received: " + id);
+                            }
                             //now handle
                             if (id == this.reliableNextExpected) {
                             	this.reliableNextExpected++;
@@ -388,7 +390,11 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                             if (streamCount == 0) {
                             	streamSize = data.getInt(2);
                                 streamCount = data.getInt(2);                                
-                                streamFileOutputStream = new FileOutputStream (streamFileCache);                                
+                                streamFileOutputStream = new FileOutputStream (streamFileCache);
+                                if(this.subspaceCallback!=null)
+                                {
+                                   this.subspaceCallback.DownloadStarted();
+                                }
                             }
                             //write buffer into file
                             data.position(6);          
@@ -397,10 +403,13 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                             streamFileOutputStream.write(buf);
                             //Decrease stream count
                             streamCount -= (data.limit() - 6);
-                            Log.d(TAG,"Stream: " + (streamSize-streamCount) +"/" + streamSize);
-                             if(this.streamCallback!=null)
+                            if(LOG_CORE_PACKETS)
+                            {
+                            	Log.d(TAG,"Stream: " + (streamSize-streamCount) +"/" + streamSize);
+                            }
+                             if(this.subspaceCallback!=null)
                              {
-                                this.streamCallback.Update(streamSize-streamCount, streamSize);
+                                this.subspaceCallback.DownloadProgressUpdate(streamSize-streamCount, streamSize);
                              }
                             if (streamCount <= 0) {
                             	//close stream
@@ -414,6 +423,11 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                             	ByteBuffer streamArray = ByteBuffer.wrap(b);
                             	streamArray.order(ByteOrder.LITTLE_ENDIAN);  
                             	streamArray.rewind();
+                            	//send update
+                                if(this.subspaceCallback!=null)
+                                {
+                                   this.subspaceCallback.DownloadComplete();
+                                }
                             	//now send on
                                 this.callback.Recv(streamArray, false);
                                 //delete file

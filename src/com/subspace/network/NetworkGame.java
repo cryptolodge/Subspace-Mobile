@@ -131,7 +131,7 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 
 					loginResponse = new LoginResponse(data);
 					
-					if(news.CRC32!=loginResponse.NewsChecksum)
+					if(news.CRC!=loginResponse.NewsChecksum)
 					{
 						Log.d(TAG, "Downloading News");
 						SSSendReliable(
@@ -255,7 +255,7 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					currentLVL = new LVL(_context,zoneName,mapInfo.Filename);
 					
 					//we dont have this map so request it
-					if(mapInfo.CRC32!= currentLVL.CRC32)
+					if(mapInfo.CRC32!= currentLVL.CRC)
 					{
 						Log.d(TAG, "Request Map " + mapInfo.Filename);	
 						SSSendReliable(

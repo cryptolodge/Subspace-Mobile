@@ -23,6 +23,8 @@ REVISIONS:
 
 package com.subspace.network;
 
-public interface IDownloadUpdateCallback {
-    void Update(int bytesProgress, int bytesTotal) ;
+public interface ISubspaceCallback {
+	void DownloadStarted();
+    void DownloadProgressUpdate(int bytesProgress, int bytesTotal) ;
+    void DownloadComplete();
 }

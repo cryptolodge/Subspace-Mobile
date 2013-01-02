@@ -12,6 +12,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.channels.WritableByteChannel;
+import java.util.zip.CRC32;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.InflaterOutputStream;
 
@@ -26,7 +27,7 @@ public abstract class ZoneFile {
 
 	public boolean Exists;
 	public final String Filename;
-	public int CRC32;
+	public int CRC;
 	public ByteBuffer Data;
 
 	protected Context context;
@@ -48,9 +49,9 @@ public abstract class ZoneFile {
 		Log.i(TAG, "Writing " + Filename + " " + data.limit() + " bytes");
 		OutputStream fos;
 		try {
-			if(requiresDecompressing)
-			{
-				fos = new InflaterOutputStream(context.openFileOutput(Filename, Context.MODE_PRIVATE));				
+			if (requiresDecompressing) {
+				fos = new InflaterOutputStream(context.openFileOutput(Filename,
+						Context.MODE_PRIVATE));
 			} else {
 				fos = context.openFileOutput(Filename, Context.MODE_PRIVATE);
 			}
@@ -72,13 +73,19 @@ public abstract class ZoneFile {
 
 	private void UpdateCRC() {
 		if (Data != null) {
-			CRC32 = Util.CRC32(Data);
+			Log.d(TAG, "Calculating CRC32");
+			CRC32 crc32 = new CRC32();
+			for (int i = 0; i < Data.limit(); i++) {
+				crc32.update(Data.get(i));
+			}
+			CRC = Util.CRC32(Data);
+			Log.d(TAG, "Completed CRC32: " + CRC);
 		}
 	}
 
 	public void writeBuffer(ByteBuffer buffer, OutputStream stream) {
 		WritableByteChannel channel = Channels.newChannel(stream);
-		
+
 		try {
 			channel.write(buffer);
 		} catch (IOException e) {

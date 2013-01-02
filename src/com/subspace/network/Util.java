@@ -81,7 +81,7 @@ public final class Util {
 	    	{
 	    		byte[] bytearr = new byte[realLength];
 	    		buffer.position(index);
-	    		buffer.get(bytearr,0,realLength);	    	
+	    		buffer.get(bytearr,0,realLength);	    		
 	    		return new String(bytearr,encoding);
 	    	} else {
 	    		return "";	    		
