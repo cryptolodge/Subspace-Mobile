@@ -118,7 +118,7 @@ public class NetworkService extends Service {
         mNM.notify(NOTIFICATION, notification);
     }
     
-    public void Connect(String ipAddress, int port)
+    public void Connect(String zoneName,String ipAddress, int port)
     {
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     	boolean logConnection =  prefs.getBoolean("pref_logConnection", true);
@@ -126,7 +126,7 @@ public class NetworkService extends Service {
 		boolean logGamePackets =  prefs.getBoolean("pref_logGamePackets", true);	
     	
     	try {
-    		subspace = new NetworkGame();
+    		subspace = new NetworkGame(getApplicationContext(),zoneName);
     		//setup logging as set in settings
     		NetworkGame.LOG_CONNECTION = logConnection;    		
     		NetworkGame.LOG_CORE_PACKETS = logCorePackets;

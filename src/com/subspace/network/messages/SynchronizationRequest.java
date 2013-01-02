@@ -2,8 +2,6 @@ package com.subspace.network.messages;
 
 import java.nio.ByteBuffer;
 
-import com.subspace.network.Util;
-
 
 /*Offset      Length      Description
             0           1           Type Byte 0x18

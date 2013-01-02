@@ -24,15 +24,19 @@ package com.subspace.network;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
 import java.util.Timer;
-import java.util.TimerTask;
+
+import android.content.Context;
+import android.util.Log;
 
 import com.subspace.android.Information;
-import com.subspace.network.messages.*;
-
-import android.util.Log;
+import com.subspace.android.LVL;
+import com.subspace.android.News;
+import com.subspace.network.messages.Chat;
+import com.subspace.network.messages.FileTransfer;
+import com.subspace.network.messages.LoginResponse;
+import com.subspace.network.messages.MapInformation;
+import com.subspace.network.messages.SynchronizationRequest;
 
 /**
  * 
@@ -45,12 +49,20 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 	boolean loginResponseReceived = false;
 	LoginResponse loginResponse = null;
 
+	Context context;
+	
 	IGameCallback gameCallback;
+	News news;
+	LVL currentLVL;
+	String zoneName;
 	
 	Timer positionTimer = new Timer();
 
-	public NetworkGame() {
+	public NetworkGame(Context context,String zonename) {		
 		super();
+		this.context = context;
+		this.zoneName = zonename;
+		news = new News(this.context,this.zoneName);
 		this.setCallback(this);
 	}
 
@@ -120,6 +132,16 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					synchronized (this) {
 						loginResponseReceived = true;
 						this.notify();
+					}				
+					
+					if(news.CRC32!=loginResponse.NewsChecksum)
+					{
+						Log.d(TAG, "Downloading News");
+						SSSendReliable(
+								NetworkPacket.CreateNewsTxtRequest()
+								);
+					} else {
+						Log.d(TAG, "No News Changes");
 					}
 				} else if (data.get(0) == NetworkPacket.S2C_NOW_IN_GAME) {
 					Log.d(TAG, "S2C_NOW_IN_GAME");
@@ -158,7 +180,7 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 						gameCallback.PlayerIdRecieved(data.getShort(1));						
 					}
 				} else if (data.get(0) == NetworkPacket.S2C_PlayerEntering) {
-					Log.d(TAG, "S2C_PlayerEntering");	
+					Log.d(TAG, "S2C_PlayerEntering")		;	
 				} else if (data.get(0) == NetworkPacket.S2C_PlayerLeaving) {
 					Log.d(TAG, "S2C_PlayerLeaving");		
 				} else if (data.get(0) == NetworkPacket.S2C_LargePosition) {
@@ -173,6 +195,31 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					}
 				} else if (data.get(0) == NetworkPacket.S2C_FlagPosition) {
 					Log.d(TAG, "S2C_FlagPosition");
+				} else if (data.get(0) == NetworkPacket.S2C_FileTransfer) {
+					Log.d(TAG, "S2C_FileTransfer");
+					
+					FileTransfer ft = new FileTransfer(data);
+					Log.d(TAG, "S2C_FileTransfer Received: " + ft.Filename);
+					if(ft.Filename=="news.txt")
+					{
+						news.Save(ft.Data);
+						
+						if (gameCallback != null) {
+							gameCallback.NewsReceieved(news);
+						}
+					}
+				} else if (data.get(0) == NetworkPacket.S2C_CompressedMapFile) {
+					Log.d(TAG, "S2C_CompressedMapFile");
+					
+					FileTransfer ft = new FileTransfer(data);
+					Log.d(TAG, "S2C_CompressedMapFile Received: " + ft.Filename);
+					
+					currentLVL.Save(ft.Data);
+					
+					if (gameCallback != null) {
+						gameCallback.MapReceived(currentLVL);
+					}
+					
 				} else if (data.get(0) == NetworkPacket.S2C_ChecksumRecv) {
 					Log.d(TAG, "S2C_ChecksumRecv");							
 					SynchronizationRequest syncRequest = new SynchronizationRequest(data);					
@@ -196,6 +243,18 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 				} else if (data.get(0) == NetworkPacket.S2C_MapInformation)	{
 					Log.d(TAG, "S2C_MapInformation");	
 					MapInformation mapInfo = new MapInformation(data);
+					
+					currentLVL = new LVL(context,zoneName,mapInfo.Filename);
+					
+					//we dont have this map so request it
+					if(mapInfo.CRC32!= currentLVL.CRC32)
+					{
+						Log.d(TAG, "Request Map " + mapInfo.Filename);	
+						SSSendReliable(
+								NetworkPacket.CreateMapRequest()
+								);						
+					}
+					
 					if (gameCallback != null) {
 						gameCallback.MapInformationRecieved(mapInfo);
 					}

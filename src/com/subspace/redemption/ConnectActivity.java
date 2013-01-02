@@ -1,24 +1,10 @@
 package com.subspace.redemption;
 
-import com.subspace.android.Information;
-import com.subspace.android.NetworkService;
-import com.subspace.network.IGameCallback;
-import com.subspace.network.NetworkGame;
-import com.subspace.network.NetworkPacket;
-import com.subspace.network.NetworkSubspace;
-import com.subspace.network.messages.Chat;
-import com.subspace.network.messages.LoginResponse;
-import com.subspace.network.messages.MapInformation;
-import com.subspace.redemption.database.DataHelper;
-import com.subspace.redemption.dataobjects.Zone;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Point;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -26,10 +12,21 @@ import android.os.Message;
 import android.text.Html;
 import android.util.Log;
 import android.view.Display;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+
+import com.subspace.android.Information;
+import com.subspace.android.LVL;
+import com.subspace.android.NetworkService;
+import com.subspace.android.News;
+import com.subspace.network.IGameCallback;
+import com.subspace.network.NetworkGame;
+import com.subspace.network.messages.Chat;
+import com.subspace.network.messages.LoginResponse;
+import com.subspace.network.messages.MapInformation;
+import com.subspace.redemption.database.DataHelper;
+import com.subspace.redemption.dataobjects.Zone;
 
 public class ConnectActivity extends Activity implements IGameCallback{
 	
@@ -127,7 +124,7 @@ public class ConnectActivity extends Activity implements IGameCallback{
 		messageView.append(Html.fromHtml("<font color='green'>Connecting to " 
 				+ zone.Name + " > " + zone.Ip + ":" + zone.Port + "</font><br/>",null,null));
 		//do a subspace connect please :)
-		networkService.Connect(zone.Ip, zone.Port);
+		networkService.Connect(zone.Name, zone.Ip, zone.Port);
 		messageView.append(Html.fromHtml("<font color='green'>Connected</font><br/>",null,null));
 		//now load subspace connection
 		subspace = networkService.getSubspace();
@@ -171,6 +168,18 @@ public class ConnectActivity extends Activity implements IGameCallback{
 	+ mapInformation.Filename + " " 
 				+ mapInformation.CRC32 + "</font><br/>");		
 		
+	}
+	
+	@Override
+	public void NewsReceieved(News news) {
+		UpdateChat("<font color='green'>News Received</font><br/>" + news.getDocument() + "<br/>");		
+		
+	}
+
+
+	@Override
+	public void MapReceived(LVL currentLVL) {
+		UpdateChat("<font color='green'>Map Received + " + currentLVL.Filename + "</font><br/>");	
 	}
 
 
@@ -219,6 +228,8 @@ public class ConnectActivity extends Activity implements IGameCallback{
 	    super.onDestroy();
 	    doUnbindService();
 	}
+
+
 
 
 

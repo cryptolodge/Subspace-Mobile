@@ -63,7 +63,10 @@ public class NetworkPacket {
     public static final byte C2S_SPECTATEPLAYER = 0x08;    
     public static final byte C2S_PASSWORD = 0x09;
     public static final byte C2S_MAPREQUEST = 0x0C;
+    public static final byte C2S_NEWSTXTREQUEST = 0x0D;
     public static final byte C2S_SECURITYCHECKSUM = 0x1A;
+    
+    
     //game s2c
     public static final byte S2C_MY_UID = 0x01;
     public static final byte S2C_NOW_IN_GAME = 0x02;
@@ -448,6 +451,12 @@ public class NetworkPacket {
 			
 		return bb;
 	}
+
+	public static ByteBuffer CreateNewsTxtRequest() {
+		ByteBuffer bb = CreatePacket(1, C2S_NEWSTXTREQUEST);
+		return bb;
+	}
+
 
 
 }

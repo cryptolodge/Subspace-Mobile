@@ -64,10 +64,22 @@ public final class Util {
     public static String GetString(ByteBuffer buffer, int index, int length, String encoding)
     {
     	try{
-    		buffer.position(index);
-	    	byte[] bytearr = new byte[length];    	
-	    	buffer.get(bytearr,0,length);
-	    	return new String(bytearr,encoding);
+    		buffer.position(index);	    	
+	    	int realLength = 0;
+	    	//this is so we stop at any "null" characters
+	    	while(buffer.get()!=0 && length> realLength)
+	    	{
+	    		realLength++;
+	    	}
+	    	if(realLength > 0)
+	    	{
+	    		byte[] bytearr = new byte[realLength];
+	    		buffer.position(index);
+	    		buffer.get(bytearr,0,realLength);	    	
+	    		return new String(bytearr,encoding);
+	    	} else {
+	    		return "";	    		
+	    	}
     	} catch(UnsupportedEncodingException e)
     	{
     		return "Error Descoding string " + encoding;
@@ -195,5 +207,8 @@ public final class Util {
     }
 
 
-
+    public static String GetSafeFilename(String Filename)
+    {    
+    	return Filename.replaceAll("[^\\w\\.]","_");
+    }
 }
