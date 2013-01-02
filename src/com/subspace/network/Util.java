@@ -28,8 +28,19 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Random;
 
+
+
 public final class Util {
-    static Random r = new Random();    
+	
+	static Random r = new Random();    
+	
+	
+	
+	//static constructor
+	static {
+	
+	}
+	  
     
     public static final int GetRandomInt() {
         return r.nextInt();
@@ -154,6 +165,15 @@ public final class Util {
         crc = crc ^ 0xffffffff;
         return crc;
 	}
+	
+/*	public static int CRC32F(byte[] data)
+	{
+		
+		CRC32Fast crc32Fast = new CRC32Fast();
+		crc32Fast.update(data, 0, data.length);
+		
+		return crc32Fast.getIntValue();
+	}*/
     
     public static int safeGetInt(ByteBuffer buffer, int index) {
     	int result;

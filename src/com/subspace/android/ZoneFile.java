@@ -8,11 +8,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.channels.WritableByteChannel;
-import java.util.zip.CRC32;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.InflaterOutputStream;
 
@@ -73,12 +73,18 @@ public abstract class ZoneFile {
 
 	private void UpdateCRC() {
 		if (Data != null) {
-			Log.d(TAG, "Calculating CRC32");
-			CRC32 crc32 = new CRC32();
-			for (int i = 0; i < Data.limit(); i++) {
-				crc32.update(Data.get(i));
-			}
+			Log.d(TAG, "Init CRC32");
+			
+//			byte[] data = new byte[Data.limit()];
+//			Data.rewind();
+//			Data.get(data);		
+//			Data.rewind();
+//			Log.d(TAG, "Calculating CRC32");
+//			
+//			CRC = Util.CRC32F(data);
+			
 			CRC = Util.CRC32(Data);
+
 			Log.d(TAG, "Completed CRC32: " + CRC);
 		}
 	}
@@ -95,6 +101,7 @@ public abstract class ZoneFile {
 	}
 
 	public static ByteBuffer byteBufferForFile(File file) {
+
 		FileChannel vectorChannel;
 		ByteBuffer vector;
 		try {
@@ -111,6 +118,7 @@ public abstract class ZoneFile {
 			return null;
 		}
 		return vector;
+
 	}
 
 }
