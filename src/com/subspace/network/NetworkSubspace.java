@@ -21,6 +21,9 @@ REVISIONS:
  */
 package com.subspace.network;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -28,6 +31,7 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.content.Context;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -68,19 +72,32 @@ public class NetworkSubspace extends Network implements INetworkCallback {
     //chunked message
     byte[] chunkArray = null;
     //stream
+    int streamSize = 0;
     int streamCount = 0;    // Handles chunk pkt sizes
-    ByteBuffer streamArray = null;    // Lg chunk packet data
+    File streamFileCache;
+    FileOutputStream streamFileOutputStream;
     IDownloadUpdateCallback streamCallback;
 
+    protected Context _context;
+    
 	public boolean isConnected() {
 		return connected;
 	}
     
-    public NetworkSubspace() {
+    public NetworkSubspace(Context context) {
         super(null);
+        _context = context;        
         //set call back
         setCallback(this);
         enc = new NetworkEncryptionVIE();
+        //create stream backing file
+        File cacheDir= context.getCacheDir();
+        streamFileCache = new File(cacheDir, "download.temp");
+        //delete if it file already exists
+        if(streamFileCache.exists())
+        {
+        	streamFileCache.delete();
+        }
         //setup reliable
         reliableNextOutbound = 0;
         reliableNextExpected = 0;
@@ -243,7 +260,12 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                 //log packets
                 if(LOG_CORE_PACKETS)
                 {
-                	Log.v(TAG,"CR: " + Util.ToHex(data));
+                	if(data.limit() > 520)
+                	{
+                		Log.v(TAG,"CR: packet in excess of 520 recieived, cannot log at the moment");
+                	} else {
+                		Log.v(TAG,"CR: " + Util.ToHex(data));
+                	}
                 }
                 
                 byte packetType = data.get(); 
@@ -364,18 +386,37 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                         break;
                         case NetworkPacket.CORE_STREAM: {
                             if (streamCount == 0) {
-                                streamCount = data.getInt(2);
-                                streamArray = ByteBuffer.allocateDirect(streamCount);
+                            	streamSize = data.getInt(2);
+                                streamCount = data.getInt(2);                                
+                                streamFileOutputStream = new FileOutputStream (streamFileCache);                                
                             }
-                            data.position(6); streamArray.put(data);                            
+                            //write buffer into file
+                            data.position(6);          
+                            byte[] buf = new byte[data.limit()-6];
+                            data.get(buf);
+                            streamFileOutputStream.write(buf);
+                            //Decrease stream count
                             streamCount -= (data.limit() - 6);
-                            Log.d(TAG,"Stream: " + (streamArray.limit()-streamCount) +"/" + streamArray.limit());
+                            Log.d(TAG,"Stream: " + (streamSize-streamCount) +"/" + streamSize);
                              if(this.streamCallback!=null)
-                                this.streamCallback.Update(streamArray.limit()-streamCount, streamArray.limit());
+                             {
+                                this.streamCallback.Update(streamSize-streamCount, streamSize);
+                             }
                             if (streamCount <= 0) {
-                            	streamArray.rewind();//move back to start
+                            	//close stream
+                            	streamFileOutputStream.close();
+                            	//copy it into memory
+                            	
+                            	byte[] b = new byte[(int)streamFileCache.length()];                            	
+                            	FileInputStream fis = new FileInputStream(streamFileCache);
+                            	fis.read(b);
+                            	fis.close();                            	
+                            	ByteBuffer streamArray = ByteBuffer.wrap(b);
+                            	streamArray.order(ByteOrder.LITTLE_ENDIAN);                           	
+                            	//now send on
                                 this.callback.Recv(streamArray, false);
-                                streamArray = null;
+                                //delete file
+                                streamFileCache.delete();                                
                             }
                         }
                         break;

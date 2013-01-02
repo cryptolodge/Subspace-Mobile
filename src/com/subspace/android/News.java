@@ -16,8 +16,6 @@ public class News extends ZoneFile {
 	}
 	public String getDocument()
 	{
-		ByteBuffer bb = ByteBuffer.wrap(RawData);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
-		return Util.GetString(bb, 0,RawData.length);		
+		return Util.GetString(Data);		
 	}
 }

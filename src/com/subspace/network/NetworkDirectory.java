@@ -28,6 +28,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.util.Log;
 
 /**
@@ -41,8 +42,8 @@ public class NetworkDirectory extends NetworkSubspace implements INetworkCallbac
     boolean responseReceieved;
     ArrayList<DirectoryZone> result;
 
-    public NetworkDirectory() {
-        super();
+    public NetworkDirectory(Context context) {
+        super(context);
         this.setCallback(this);
     }
 

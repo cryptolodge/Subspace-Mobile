@@ -28,7 +28,7 @@ public class FileTransfer {
 	protected static final String TAG = "Subspace";
 
 	public String Filename;
-	public byte[] Data;
+	public ByteBuffer Data;
 	public final boolean Compressed;
 
 	public FileTransfer(ByteBuffer bb) {
@@ -50,32 +50,7 @@ public class FileTransfer {
 			
 		}
 		
-
-		if (Compressed) {
-			try {
-				Inflater ifl = new Inflater(); // mainly generate the extraction
-				// df.setLevel(Deflater.BEST_COMPRESSION);
-				byte[] input = new byte[bb.limit() - 17];
-				bb.position(17);
-				bb.get(input);
-				ifl.setInput(input);
-				ByteArrayOutputStream baos = new ByteArrayOutputStream(input.length);
-				byte[] buff = new byte[1024];
-				while (!ifl.finished()) {
-					int count = ifl.inflate(buff);
-					baos.write(buff, 0, count);
-				}
-
-				baos.close();
-				Data = baos.toByteArray();
-			} catch (Exception e) {
-				Log.e(TAG, Log.getStackTraceString(e));
-				Data = new byte[0];
-			}
-		} else {
-			Data = new byte[bb.limit() - 17];
-			bb.position(17);
-			bb.get(Data);
-		}
+		bb.position(17);
+		Data= bb.slice();
 	}
 }

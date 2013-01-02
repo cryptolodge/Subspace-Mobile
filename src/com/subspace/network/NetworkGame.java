@@ -49,8 +49,6 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 	boolean loginResponseReceived = false;
 	LoginResponse loginResponse = null;
 
-	Context context;
-	
 	IGameCallback gameCallback;
 	News news;
 	LVL currentLVL;
@@ -59,10 +57,10 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 	Timer positionTimer = new Timer();
 
 	public NetworkGame(Context context,String zonename) {		
-		super();
-		this.context = context;
+		super(context);
+		
 		this.zoneName = zonename;
-		news = new News(this.context,this.zoneName);
+		news = new News(_context,this.zoneName);
 		this.setCallback(this);
 	}
 
@@ -119,7 +117,12 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 		// analyse
 		if (data != null) {
 			if (LOG_GAME_PACKETS) {
-				Log.v(TAG, "Game: " + Util.ToHex(data));
+				if(data.limit() > 520)
+            	{
+            		Log.v(TAG,"Game: packet in excess of 520 recieived, cannot log at the moment");
+            	} else {
+            		Log.v(TAG, "Game: " + Util.ToHex(data));
+            	}
 			}
 			try {
 				if (data.get(0) == NetworkPacket.S2C_PASSWORDACK) {
@@ -127,12 +130,6 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					// its saved in the array file
 
 					loginResponse = new LoginResponse(data);
-
-					// notify completion of task
-					synchronized (this) {
-						loginResponseReceived = true;
-						this.notify();
-					}				
 					
 					if(news.CRC32!=loginResponse.NewsChecksum)
 					{
@@ -141,6 +138,11 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 								NetworkPacket.CreateNewsTxtRequest()
 								);
 					} else {
+						// notify completion of task
+						synchronized (this) {
+							loginResponseReceived = true;
+							this.notify();
+						}			
 						Log.d(TAG, "No News Changes");
 					}
 				} else if (data.get(0) == NetworkPacket.S2C_NOW_IN_GAME) {
@@ -202,11 +204,17 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					Log.d(TAG, "S2C_FileTransfer Received: " + ft.Filename);
 					if(ft.Filename=="news.txt")
 					{
-						news.Save(ft.Data);
+						news.Save(ft.Data,ft.Compressed);
 						
 						if (gameCallback != null) {
 							gameCallback.NewsReceieved(news);
 						}
+						
+						// notify login completed
+						synchronized (this) {
+							loginResponseReceived = true;
+							this.notify();
+						}			
 					}
 				} else if (data.get(0) == NetworkPacket.S2C_CompressedMapFile) {
 					Log.d(TAG, "S2C_CompressedMapFile");
@@ -214,7 +222,7 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					FileTransfer ft = new FileTransfer(data);
 					Log.d(TAG, "S2C_CompressedMapFile Received: " + ft.Filename);
 					
-					currentLVL.Save(ft.Data);
+					currentLVL.Save(ft.Data,ft.Compressed);
 					
 					if (gameCallback != null) {
 						gameCallback.MapReceived(currentLVL);
@@ -244,7 +252,7 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					Log.d(TAG, "S2C_MapInformation");	
 					MapInformation mapInfo = new MapInformation(data);
 					
-					currentLVL = new LVL(context,zoneName,mapInfo.Filename);
+					currentLVL = new LVL(_context,zoneName,mapInfo.Filename);
 					
 					//we dont have this map so request it
 					if(mapInfo.CRC32!= currentLVL.CRC32)

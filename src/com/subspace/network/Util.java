@@ -57,6 +57,11 @@ public final class Util {
 	   return ToHex(data);
     }
     
+	public static String GetString(ByteBuffer data) {
+		return  GetString(data,0,data.limit()-1);
+	}
+
+    
 	public static String GetString(ByteBuffer buffer, int index, int length) {		
 		return  GetString(buffer, index, length, "ISO-8859-1");
 	}
@@ -66,6 +71,7 @@ public final class Util {
     	try{
     		buffer.position(index);	    	
 	    	int realLength = 0;
+	    	
 	    	//this is so we stop at any "null" characters
 	    	while(buffer.get()!=0 && length> realLength)
 	    	{
@@ -135,6 +141,19 @@ public final class Util {
         crc = crc ^ 0xffffffff;
         return crc;
     }
+    
+	public static int CRC32(ByteBuffer data) {
+        int crc = 0xffffffff;
+        data.rewind();
+        for (int x=0;x<data.limit();x++)
+        {
+            crc = (crc >>> 8) ^ CRC32_TABLE[(crc ^ data.get(x)) & 0xff];
+        }
+        data.rewind();
+        // flip bits
+        crc = crc ^ 0xffffffff;
+        return crc;
+	}
     
     public static int safeGetInt(ByteBuffer buffer, int index) {
     	int result;
@@ -211,4 +230,7 @@ public final class Util {
     {    
     	return Filename.replaceAll("[^\\w\\.]","_");
     }
+
+
+
 }

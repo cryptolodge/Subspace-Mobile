@@ -107,7 +107,7 @@ public class ZonesActivity extends ListActivity  {
         	
         	ArrayList<DirectoryZone> zones =null;
         	try {		
-        		NetworkDirectory nd = new NetworkDirectory();
+        		NetworkDirectory nd = new NetworkDirectory(_activity);
         		nd.setDownloadUpdateCallback(this);
         		zones = nd.Download(server[0]);
         		//sort by player count
