@@ -412,7 +412,8 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                             	fis.read(b);
                             	fis.close();                            	
                             	ByteBuffer streamArray = ByteBuffer.wrap(b);
-                            	streamArray.order(ByteOrder.LITTLE_ENDIAN);                           	
+                            	streamArray.order(ByteOrder.LITTLE_ENDIAN);  
+                            	streamArray.rewind();
                             	//now send on
                                 this.callback.Recv(streamArray, false);
                                 //delete file
@@ -434,7 +435,7 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                                 data.position(i+1); data.get(subMessage, 0, size);
                                 
                                 ByteBuffer buffer = ByteBuffer.wrap(subMessage);
-                                buffer.order(ByteOrder.LITTLE_ENDIAN);   
+                                buffer.order(ByteOrder.LITTLE_ENDIAN);                                  
                                 
                                 this.callback.Recv(buffer, false);
                                 i += size + 1;
@@ -443,7 +444,12 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                         }
                         default:
                         {
-                            Log.d(TAG,"Unrecognised Core Packet: " +Util.ToHex(data));
+                        	if(data.limit() > 520)
+                        	{
+                        		Log.i(TAG,"Unrecognised Core Packet: packet in excess of 520 recieived, cannot log at the moment");
+                        	} else {
+                        		Log.i(TAG,"Unrecognised Core Packet: " + Util.ToHex(data));
+                        	}
                         }
                     }
                     return null;
