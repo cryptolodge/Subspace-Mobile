@@ -16,6 +16,8 @@ import java.nio.channels.WritableByteChannel;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.InflaterOutputStream;
 
+import org.apache.hadoop.util.PureJavaCrc32;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -75,15 +77,13 @@ public abstract class ZoneFile {
 		if (Data != null) {
 			Log.d(TAG, "Init CRC32");
 			
-//			byte[] data = new byte[Data.limit()];
-//			Data.rewind();
-//			Data.get(data);		
-//			Data.rewind();
-//			Log.d(TAG, "Calculating CRC32");
-//			
-//			CRC = Util.CRC32F(data);
+			byte[] data = new byte[Data.limit()];
+			Data.rewind();
+			Data.get(data);		
+			Data.rewind();
+			Log.d(TAG, "Calculating CRC32");
 			
-			CRC = Util.CRC32(Data);
+			CRC = (int)Util.CRC32(data);
 
 			Log.d(TAG, "Completed CRC32: " + CRC);
 		}
