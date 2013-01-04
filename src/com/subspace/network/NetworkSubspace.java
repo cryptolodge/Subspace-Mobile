@@ -317,7 +317,10 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                                 data.get(msg,0,msg.length);                                
                                 this.reliableIncoming.put(id, msg);
                             } else {
-                            	Log.d(TAG,"Already received, resending ack for: " + id);
+                            	if(LOG_CORE_PACKETS)
+                                {
+                            		Log.d(TAG,"Already received, resending ack for: " + id);
+                                }
                             	//we've already had this packet so send a 2 more acks to make sure we don't get it again 
                             	this.SSSend(NetworkPacket.CreateReliableAck(id));
                             	this.SSSend(NetworkPacket.CreateReliableAck(id));
