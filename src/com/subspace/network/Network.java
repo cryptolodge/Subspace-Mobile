@@ -57,7 +57,9 @@ public abstract class Network implements Runnable {
    protected final void Connect(String host, int port) throws IOException {	   
 	   InetSocketAddress remoteHostaddress = new InetSocketAddress(host,port);
 	   channel = DatagramChannel.open();
-	   channel.connect(remoteHostaddress);	   
+	   //channel.configureBlocking(false);
+	   channel.connect(remoteHostaddress);   
+	   
        //woo we are connected
        networkThread = new Thread(this);
        isRunning = true;
@@ -103,7 +105,8 @@ public abstract class Network implements Runnable {
 		   Log.v(TAG, "S:" + Util.ToHex(buffer));
 	   }
 	   //write
-	   int writenBytes = channel.write(buffer);
+	   int writenBytes = channel.write(buffer);  
+	   
 	   //stats
 	   BytesOut+=writenBytes;
        packetOutCount++;
