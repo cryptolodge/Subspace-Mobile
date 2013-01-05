@@ -114,8 +114,60 @@ public  class Checksum {
 	
 	public static int MapChecksum(int key, ByteBuffer data)
 	{
+		int EAX, ECX, ESI, EDX;
+		int HighBit = 0;
+		int cnt;
+		int original_key = key;
+
+		if(data == null)
+			return 0;
 		
+		data.rewind();
+
+		int index = 0;
+		
+		
+		EAX = key;
+
+		if((EAX & 0x80000000) != 0)
+		{
+			HighBit = 0xFFFFFFFF;
+		}
+
+		EAX ^= HighBit;
+		EAX -= HighBit;
+		EAX &= 0x1F;
+		EAX ^= HighBit;
+		ECX = EAX - HighBit;
+		if(ECX >= 0x400)
+		{
+			return key;
+		}
+
+		EDX = key % 0x1F;
+
+		ESI = (ECX << 0x0A) + data.get(index) + EDX;
+		EAX = 0x400 - EDX;
+		cnt = (0x41F - ECX) >> 5;
+		index  = EAX;
+
+		for(; cnt > 0; cnt--, ESI += 0x8000)
+		{
+			EDX = EAX + ESI;
+			ECX = ESI;
+			if(!(ESI < EDX))
+				continue;
+			while(ECX < EDX)
+			{
+				byte byt = data.get(ECX);
+				if((byt < 0xA1 || byt == 0xAB) && byt != 0)
+					key += original_key ^ byt;
+				ECX += 0x1F;
+			}
+			EAX = data.getInt(index);
+		}
 		return key;
+		
 	}
 	
 	public static int SettingsChecksum(int key,ByteBuffer settingsBuffer)
