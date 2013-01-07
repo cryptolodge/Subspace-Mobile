@@ -69,9 +69,14 @@ public abstract class ZoneFile {
 		Log.i(TAG, "Loading " + Filename);
 		// memory map file
 		Data = byteBufferForFile(context.getFileStreamPath(Filename));
-
+		Data.order(ByteOrder.LITTLE_ENDIAN);
+		
 		UpdateCRC();
+		
+		AfterLoad();
 	}
+	
+	protected void AfterLoad() { }
 
 	private void UpdateCRC() {
 		if (Data != null) {
@@ -79,6 +84,7 @@ public abstract class ZoneFile {
 			
 			byte[] data = new byte[Data.limit()];
 			Data.rewind();
+			Data.position(0);
 			Data.get(data);		
 			Data.rewind();
 			Log.d(TAG, "Calculating CRC32");

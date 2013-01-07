@@ -37,6 +37,7 @@ import com.subspace.network.messages.FileTransfer;
 import com.subspace.network.messages.LoginResponse;
 import com.subspace.network.messages.MapInformation;
 import com.subspace.network.messages.SynchronizationRequest;
+import com.subspace.snrrrub.Checksum;
 
 /**
  * 
@@ -231,7 +232,11 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 				} else if (data.get(0) == NetworkPacket.S2C_ChecksumRecv) {
 					Log.d(TAG, "S2C_ChecksumRecv");							
 					SynchronizationRequest syncRequest = new SynchronizationRequest(data);					
-					SSSend(NetworkPacket.CreateSecurityChecksum(syncRequest.ChecksumKey));					
+					SSSend(NetworkPacket.CreateSecurityChecksum(
+							0, //toso settings checksum
+							Checksum.EXEChecksum(syncRequest.ChecksumKey),
+							this.currentLVL.CheckSum(syncRequest.ChecksumKey)
+							));					
 				} else if (data.get(0) == NetworkPacket.S2C_KeepAlive) {
 					Log.d(TAG, "S2C_KeepAlive");					
 					//send postion

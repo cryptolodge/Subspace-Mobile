@@ -442,12 +442,12 @@ public class NetworkPacket {
  
             *2 - Settings checksum is the checksum of the contents of the settings packet
 	 */
-	public static ByteBuffer CreateSecurityChecksum(int key) {
+	public static ByteBuffer CreateSecurityChecksum(int settingsChecksum, int exeChecksum, int lvlChecksum) {
 		ByteBuffer bb = CreatePacket(40, C2S_SECURITYCHECKSUM);
 		//generate checksums
-		bb.putInt(5,0);
-		bb.putInt(9,Checksum.EXEChecksum(key));
-		bb.putInt(13,0);
+		bb.putInt(5,settingsChecksum);
+		bb.putInt(9,exeChecksum);
+		bb.putInt(13,lvlChecksum);
 			
 		return bb;
 	}

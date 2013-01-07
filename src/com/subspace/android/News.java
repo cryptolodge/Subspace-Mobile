@@ -18,4 +18,6 @@ public class News extends ZoneFile {
 	{
 		return Util.GetString(Data);		
 	}
+	
+	
 }

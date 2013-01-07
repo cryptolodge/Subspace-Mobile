@@ -3,6 +3,10 @@ package com.subspace.android;
 import android.graphics.Color;
 
 public class LVLTile {
+	
+	public static final int  TILE_START = 1;
+	public static final int  TILE_END = 160;
+	
     public static final int  FLAG = 170;
     public static final int  SAFETY = 171;
     public static final int  GOAL = 172;
@@ -18,11 +22,11 @@ public class LVLTile {
     public static final int  FIRST_FLYUNDER = 176;
     public static final int  LAST_FLYUNDER = 190;
 
-    public int X;
-    public int Y;
-    public int Type;
+    public short X;
+    public short Y;
+    public short Type;
 
-    public LVLTile(int x, int y, int tiletype)
+    public LVLTile(short x, short y, short tiletype)
     {
         X = x;
         Y= y;        
