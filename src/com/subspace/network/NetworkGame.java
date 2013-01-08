@@ -282,4 +282,15 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 		return null;
 	}
 
+	public void SendChat(String message) {
+		// send reliable
+		try {
+			SSSendReliable(
+					NetworkPacket.CreateChat((byte)2,(byte)0,(short)0,message)
+					);
+		} catch (IOException e) {
+			Log.e(TAG, Log.getStackTraceString(e));
+		}
+	}
+
 }

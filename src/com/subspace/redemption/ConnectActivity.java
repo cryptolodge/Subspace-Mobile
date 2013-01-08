@@ -6,16 +6,22 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 import com.subspace.android.Information;
 import com.subspace.android.LVL;
@@ -44,6 +50,8 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 
 	ProgressDialog _dialog;
 
+	SharedPreferences prefs;
+	
 	ServiceConnection networkServiceConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			// This is called when the connection with the service has been
@@ -102,6 +110,33 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 		Information.ScreenHeight = (short) display.getHeight();
 		
 		_dialog = new ProgressDialog(this);
+		
+		//hook up chatbox
+		EditText editText = (EditText) findViewById(R.id.chatBox);
+		editText.setOnEditorActionListener(new OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(TextView arg0, int actionId, KeyEvent arg2) {
+		        boolean handled = false;
+		        if (actionId == EditorInfo.IME_ACTION_SEND) {
+		            sendMessage(arg0);
+		            handled = true;
+		        }
+		        return handled;
+			}
+		});
+		
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	
+	}
+
+	protected void sendMessage(TextView textView) {
+		String message = textView.getText().toString();
+		textView.setText("");
+		
+		//write to log
+		messageView.append(Html.fromHtml("<font color='white'>" + prefs.getString("pref_username", "") + ">" + message + "</font><br/>"));
+		//send
+		subspace.SendChat(message);
 	}
 
 	@Override
@@ -146,8 +181,12 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 			messageView.append(Html
 					.fromHtml("<font color='green'>Logging in...</font><br/>",
 							null, null));
-			LoginResponse response = subspace.Login(false, "SubspaceMobile",
-					"SubspaceMobile");
+			
+			String username =  prefs.getString("pref_username", "");
+	    	String password =  prefs.getString("pref_password", "");
+			
+			LoginResponse response = subspace.Login(false,username,
+					password);
 			if (response != null) {
 				messageView.append(Html.fromHtml(
 						"<font color='green'>Login Success</font><br/>", null,

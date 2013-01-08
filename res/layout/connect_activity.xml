@@ -1,14 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/scroller"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#000000" >
+    android:orientation="vertical" >
 
-        <TextView android:id="@+id/messageView"
-            android:layout_height="fill_parent" android:layout_width="fill_parent"
-            android:paddingBottom="8dip" android:background="#000000"
-            android:textColor="#ffffff" />
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scroller"
+    android:layout_width="fill_parent"
+    android:layout_height="0dp"
+    android:background="#000000"
+    android:gravity="top" 
+    android:layout_weight="1">
+
+    <TextView
+        android:id="@+id/messageView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#000000"
+        android:paddingBottom="8dip"
+        android:textColor="#ffffff" />
+
     </ScrollView>
-  
+
+  	<EditText
+  	    android:id="@+id/chatBox"
+  	    android:layout_width="fill_parent"
+  	    android:layout_height="wrap_content"
+  	    android:layout_gravity="bottom"
+  	    android:hint="Chat here"
+  	    android:height="20dp"
+  	    android:inputType="text"
+  	    android:maxLength="510"
+  	    android:background="#222222"
+  	    android:textColor="#FFFFFF" 
+  	    android:imeOptions="actionSend"/>
+
+</LinearLayout>
     
