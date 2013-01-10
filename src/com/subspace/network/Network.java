@@ -90,8 +90,8 @@ public abstract class Network implements Runnable {
 	               //send call back
 	               callback.Recv(buffer, true);
         	   }
-           } catch (IOException ioe) {
-               ioe.printStackTrace();
+           } catch (Exception ioe) {
+               Log.e(TAG,Log.getStackTraceString(ioe));
            }
        }
    }

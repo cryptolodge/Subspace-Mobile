@@ -100,9 +100,9 @@ public class NetworkDirectory extends NetworkSubspace implements INetworkCallbac
                         p++;
                         //switch byte order
                         data.order(ByteOrder.LITTLE_ENDIAN);
-                        int port = (int)(data.getShort(p));
+                        int port = (int)(data.getShort(p) & 0xFFFF);
                         p += 2;
-                        short playerCount = (short) (data.getShort(p) & 0x00FF);
+                        short playerCount = (short) (data.getShort(p) & 0xFFFF);
                         p += 2;
                         byte billing = data.get(p);
                         p += 1;

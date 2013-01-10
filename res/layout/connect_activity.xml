@@ -16,7 +16,8 @@
     <TextView
         android:id="@+id/messageView"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
         android:background="#000000"
         android:paddingBottom="8dip"
         android:textColor="#ffffff" />

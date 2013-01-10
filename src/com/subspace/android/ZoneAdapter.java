@@ -1,6 +1,7 @@
 package com.subspace.android;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.view.View;
@@ -13,9 +14,9 @@ import com.subspace.redemption.R;
 import com.subspace.redemption.dataobjects.Zone;
 
 public class ZoneAdapter extends ArrayAdapter<Zone> {
-	private ArrayList<Zone> items;        
+	private List<Zone> items;        
 
-    public ZoneAdapter(Context context, int textViewResourceId, ArrayList<Zone> items) {
+    public ZoneAdapter(Context context, int textViewResourceId, List<Zone> items) {
             super(context, textViewResourceId, items);
             this.items = items;
     }

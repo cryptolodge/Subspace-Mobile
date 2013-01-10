@@ -95,12 +95,12 @@ public class NetworkPing extends Network implements INetworkCallback {
                 int total = bb.getInt(0);
                 int random = bb.getInt(4);
                 if (random == this.sentNumber) {
-                    playerCount = total;
-                    this.notify();
+                    playerCount = total;                   
                 } else {
                     playerCount = -1;
                 }
-            }            
+            }        
+            this.notify();
         }
         return null;
     }
