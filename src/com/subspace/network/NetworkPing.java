@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import android.util.Log;
+
 /**
 struct C2SSimplePing {
 u32 timestamp;
@@ -43,7 +45,7 @@ public class NetworkPing extends Network implements INetworkCallback {
     int playerCount = -1;
     int retryCount = 0;
     static int MAX_RETRY = 5;
-    static int PING_WAIT_TIME = 1000; //1 second
+    static int PING_WAIT_TIME = 2000; //1 second
 
     public NetworkPing() {
         super(null);
@@ -58,6 +60,7 @@ public class NetworkPing extends Network implements INetworkCallback {
         //connct
         long sendTime;
         int pingTime = -1;
+        try {
         this.Connect(host, port);
         synchronized (this) {
             //block for wait
@@ -79,8 +82,13 @@ public class NetworkPing extends Network implements INetworkCallback {
                 //close connection
                 this.Close();
             } catch (InterruptedException ie) {
-                ie.printStackTrace();
+            	Log.v(TAG,"Error Connecting" + Log.getStackTraceString(ie));               
             }
+        }
+        } catch(Exception e)
+        {
+        	Log.e(TAG,"Error Connecting" + Log.getStackTraceString(e));
+        	
         }
         if (playerCount < 0) {
             pingTime = -1;
@@ -89,17 +97,19 @@ public class NetworkPing extends Network implements INetworkCallback {
     }
 
     public ByteBuffer Recv(ByteBuffer bb, boolean decrypt) {
+                	
+    	bb.order(ByteOrder.LITTLE_ENDIAN);        	
+        if (bb.limit() == 8) {                  	
+            int total = bb.getInt(0);
+            int random = bb.getInt(4);
+            if (random == this.sentNumber) {
+                playerCount = total;                   
+            } else {
+                playerCount = -1;
+            }
+        }  
+            
         synchronized (this) {
-            if (bb.limit() == 8) {      
-            	
-                int total = bb.getInt(0);
-                int random = bb.getInt(4);
-                if (random == this.sentNumber) {
-                    playerCount = total;                   
-                } else {
-                    playerCount = -1;
-                }
-            }        
             this.notify();
         }
         return null;

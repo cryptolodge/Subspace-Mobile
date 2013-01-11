@@ -26,13 +26,15 @@ import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.AsynchronousCloseException;
+import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.DatagramChannel;
 
 import android.util.Log;
 
 public abstract class Network implements Runnable {
    private static final boolean LOG_RAW_PACKETS = false;
-   private static final String TAG = "Subspace";
+   protected static final String TAG = "Subspace";
    private static final int MAX_UDP_PACKETSIZE = 512;
    
    protected INetworkCallback callback;
@@ -90,6 +92,8 @@ public abstract class Network implements Runnable {
 	               //send call back
 	               callback.Recv(buffer, true);
         	   }
+           } catch (AsynchronousCloseException ioe) {
+        	   Log.v(TAG,"Timeout exceeded, interrupted"); 
            } catch (Exception ioe) {
                Log.e(TAG,Log.getStackTraceString(ioe));
            }
