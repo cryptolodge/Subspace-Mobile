@@ -93,7 +93,10 @@ public abstract class Network implements Runnable {
 	               callback.Recv(buffer, true);
         	   }
            } catch (AsynchronousCloseException ioe) {
-        	   Log.v(TAG,"Timeout exceeded, interrupted"); 
+        	   Log.v(TAG,"Timeout exceeded, interrupted");
+           } catch (PortUnreachableException pue)
+           {
+        	   Log.v(TAG,"Unable to connect, no response");
            } catch (Exception ioe) {
                Log.e(TAG,Log.getStackTraceString(ioe));
            }

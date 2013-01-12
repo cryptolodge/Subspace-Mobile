@@ -45,7 +45,7 @@ public class ZoneAdapter extends ArrayAdapter<Zone> {
     		if(o.Ping!=0)
     		{
     			holder.topText.setText(o.Name + " : " + o.Population + " Players");
-    			holder.bottomText.setText("Ping " + o.Ping);
+    			holder.bottomText.setText("Ping " + Math.round(o.Ping / 10)*10);
     		}
     		//change color depending on ping
     		if(o.Ping < 0)
