@@ -133,8 +133,8 @@ public class NetworkService extends Service {
     		NetworkGame.LOG_GAME_PACKETS = logGamePackets;
     		
     		//temp local test
-    		ipAddress= "192.168.1.100";
-    		port = 5000;
+    		ipAddress= "86.163.6.11";
+    		port = 2000;
     		
 			subspace.SSConnect(ipAddress,port);
 		} catch (Exception e) {

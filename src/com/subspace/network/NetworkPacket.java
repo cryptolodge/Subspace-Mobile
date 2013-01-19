@@ -270,7 +270,7 @@ public class NetworkPacket {
 	}
 
 	public static ByteBuffer CreateMapRequest() {
-		ByteBuffer bb = CreatePacket(1, C2S_MAPREQUEST);
+		ByteBuffer bb = CreatePacket(0, C2S_MAPREQUEST);
 		return bb;
 	}
 
@@ -368,7 +368,7 @@ public class NetworkPacket {
 	}
 
 	public static ByteBuffer CreateNewsTxtRequest() {
-		ByteBuffer bb = CreatePacket(1, C2S_NEWSTXTREQUEST);
+		ByteBuffer bb = CreatePacket(0, C2S_NEWSTXTREQUEST);
 		return bb;
 	}
 
