@@ -226,8 +226,13 @@ public class NetworkPacket {
 
 	// <editor-fold defaultstate="collapsed" desc=" Packet Description ">
 	/*
-	 * Offset Length Descriptoin 0 1 Type Byte 0x01 1 1 Ship type 2 2 Allow
-	 * audio? 4 2 X resolution 6 2 Y resolution 8 2 Main arena number *1
+	 * Offset Length Descriptoin 
+	 * 0 1 Type Byte 0x01 
+	 * 1 1 Ship type 
+	 * 2 2 Allow audio? 
+	 * 4 2 X resolution 
+	 * 6 2 Y resolution 
+	 * 8 2 Main arena number *1
 	 * 
 	 * 10 16 Arena name (Optional)
 	 * 
@@ -241,14 +246,12 @@ public class NetworkPacket {
 	 */
 	// </editor-fold>
 	public static ByteBuffer CreateArenaLogin(byte shiptype, short xres,
-			short yres, String arena) {
+			short yres, String arena, byte optionalLVZ) {
 		try {
 			ByteBuffer bb;
-			if (arena != null) {
-				bb = CreatePacket(25, C2S_ARENALOGIN);
-			} else {
-				bb = CreatePacket(10, C2S_ARENALOGIN);
-			}
+			
+			bb = CreatePacket(25, C2S_ARENALOGIN);
+			
 			bb.put(1, shiptype);
 			bb.putShort(2, (short) 0); // disable sound
 			bb.putShort(4, xres);
@@ -262,6 +265,7 @@ public class NetworkPacket {
 				bb.position(10);
 				bb.put(arena.getBytes(CHARSET));
 			}
+			bb.put(24,optionalLVZ);
 			return bb;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -277,10 +281,19 @@ public class NetworkPacket {
 	/*
 	 * 0x03 Position packet
 	 * 
-	 * Offset Length Description 0 1 Type Byte 0x03 1 1 Direction (0 ... 360) 2
-	 * 4 Timestamp 6 2 X Velocity 8 2 Y Pixels (0 ... 16384) 10 1 Checksum 11 1
-	 * Togglables *1 12 2 X Pixels (0 ... 16384) 14 2 Y Velocity 16 2 Bounty 18
-	 * 2 Energy 20 2 Weapon Info *2
+	 * Offset Length Description 
+	 * 0 1 Type Byte 0x03 
+	 * 1 1 Direction (0 ... 360)  * 
+	 * 2 4 Timestamp 
+	 * 6 2 X Velocity 
+	 * 8 2 Y Pixels (0 ... 16384) 
+	 * 10 1 Checksum 
+	 * 11 1	 * Togglables *1 
+	 * 12 2 X Pixels (0 ... 16384) 
+	 * 14 2 Y Velocity 
+	 * 16 2 Bounty 
+	 * 18 2 Energy 
+	 * 20 2 Weapon Info *2
 	 * 
 	 * 22 2 Energy *4 (Optional) 24 2 S2C Latency *4 (Optional) 26 2 Timer *4
 	 * (Optional) 28 4 Item info *3 *4 (Optional)
@@ -315,7 +328,7 @@ public class NetworkPacket {
 			byte direction, short xV, short yV, short bounty, short energy,
 			short weapon, byte togglables) {
 
-		ByteBuffer bb = CreatePacket(22, C2S_POSITION);
+		ByteBuffer bb = CreatePacket(21, C2S_POSITION);
 
 		byte checksum = 0;
 

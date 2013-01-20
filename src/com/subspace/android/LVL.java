@@ -22,28 +22,29 @@ public class LVL extends ZoneFile {
 
 	}
 
-	public int CheckSum(int key) {
+	public synchronized  int CheckSum(int key) {
 		int savekey = (int) key;
-
-		for (int y = savekey % 32; y < 1024; y += 32)
-			for (int x = savekey % 31; x < 1024; x += 31) {
-				short tile = 0;
-				LVLTile lvltile = Tiles[x][y];
-				if (lvltile != null) {
-					tile = Tiles[x][y].Type;
-					if ((tile >= LVLTile.TILE_START && tile <= LVLTile.TILE_END)
-							|| tile == LVLTile.SAFETY) {
-						key += savekey ^ tile;
+		
+		if(Tiles!=null)
+		{
+			for (int y = savekey % 32; y < 1024; y += 32)
+				for (int x = savekey % 31; x < 1024; x += 31) {
+					short tile = 0;
+					LVLTile lvltile = Tiles[x][y];
+					if (lvltile != null) {
+						tile = Tiles[x][y].Type;
+						if ((tile >= LVLTile.TILE_START && tile <= LVLTile.TILE_END)
+								|| tile == LVLTile.SAFETY) {
+							key += savekey ^ tile;
+						}
 					}
 				}
-			}
-
+		}
 		return key;
-
 	}
 
 	@Override
-	public void AfterLoad() {
+	public synchronized void AfterLoad() {
 		Tiles = new LVLTile[1024][1024];
 		// process file
 		short bfType = Data.getShort(0); // == 0x4D42 ("BM")

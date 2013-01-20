@@ -106,7 +106,7 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 		try {
 			Log.d(TAG, "C2S_ARENALOGIN");
 			this.SSSendReliable(NetworkPacket.CreateArenaLogin((byte) 7,
-					Information.ScreenWidth, Information.ScreenHeight, name));
+					Information.ScreenWidth, Information.ScreenHeight, name, (byte)0));
 		} catch (IOException e) {
 			Log.e(TAG, Log.getStackTraceString(e));
 		}

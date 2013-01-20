@@ -39,5 +39,14 @@ public class Chat {
 		PlayerId = data.getShort(3);
 		Message = Util.GetString(data, 5, data.limit() - 6, "ISO-8859-1");
 	}
+	
+		
+	public String getFormattedMessage()
+	{
+		
+		
+		return "";
+	}
+	
 
 }
