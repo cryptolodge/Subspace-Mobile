@@ -106,7 +106,7 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 		try {
 			Log.d(TAG, "C2S_ARENALOGIN");
 			this.SSSendReliable(NetworkPacket.CreateArenaLogin((byte) 7,
-					Information.ScreenWidth, Information.ScreenHeight, name, (byte)0));
+					(short)1024, (short)800, name, (byte)0));
 		} catch (IOException e) {
 			Log.e(TAG, Log.getStackTraceString(e));
 		}
@@ -132,19 +132,35 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 
 					loginResponse = new LoginResponse(data);
 					
-					if(news.CRC!=loginResponse.NewsChecksum)
-					{
-						Log.d(TAG, "Downloading News");
-						SSSendReliable(
-								NetworkPacket.CreateNewsTxtRequest()
-								);
-					} else {
-						// notify completion of task
-						synchronized (this) {
-							loginResponseReceived = true;
-							this.notify();
-						}			
-						Log.d(TAG, "No News Changes");
+					if(!loginResponse.isLoginOK())
+					{						
+						//login failed
+						Log.e(TAG,loginResponse.getLoginMessage());						
+						if(gameCallback!=null)
+						{
+							gameCallback.ConsoleMessageReceived(loginResponse.getLoginMessage());
+						}
+						SSDisconnect();
+					} 
+					else 
+					{					
+						//send sync
+						SSSync();
+						//now ask for news
+						if(news.CRC!=loginResponse.NewsChecksum)
+						{
+							Log.d(TAG, "Downloading News");
+							SSSendReliable(
+									NetworkPacket.CreateNewsTxtRequest()
+									);
+						} else {
+							// notify completion of task
+							synchronized (this) {
+								loginResponseReceived = true;
+								this.notify();
+							}			
+							Log.d(TAG, "No News Changes");
+						}
 					}
 				} else if (data.get(0) == NetworkPacket.S2C_NOW_IN_GAME) {
 					Log.d(TAG, "S2C_NOW_IN_GAME");

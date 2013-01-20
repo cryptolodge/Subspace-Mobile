@@ -11,4 +11,5 @@ public interface IGameCallback {
 	 void MapInformationRecieved(MapInformation mapInformation);
 	 void NewsReceieved(News news);
 	void MapReceived(LVL currentLVL);
+	void ConsoleMessageReceived(String consoleMessage);
 }

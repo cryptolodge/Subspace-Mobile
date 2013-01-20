@@ -55,16 +55,46 @@ public class NetworkPacket {
 	public static final byte DIRECTORY_REQUEST = 0x01;
 	public static final byte DIRECTORY_RESPONSE = 0x01;
 	// game c2s
-	public static final byte C2S_ARENALOGIN = 0x01;
-	public static final byte C2S_LEAVEARENA = 0x02;
-	public static final byte C2S_POSITION = 0x03;
-	public static final byte C2S_DEATH = 0x05;
-	public static final byte C2S_CHAT = 0x06;
-	public static final byte C2S_SPECTATEPLAYER = 0x08;
-	public static final byte C2S_PASSWORD = 0x09;
-	public static final byte C2S_MAPREQUEST = 0x0C;
-	public static final byte C2S_NEWSTXTREQUEST = 0x0D;
-	public static final byte C2S_SECURITYCHECKSUM = 0x1A;
+	/* C2S PACKET TYPES */
+	public static final byte  C2S_GOTOARENA = 0x01;
+	public static final byte  C2S_LEAVING =0x02;
+	public static final byte  C2S_POSITION =0x03;
+	/* missing 04 : appears to be disabled in subgame */
+	public static final byte  C2S_DIE =0x05;
+	public static final byte  C2S_CHAT= 0x06;
+	public static final byte  C2S_GREEN =0x07;
+	public static final byte  C2S_SPECREQUEST= 0x08;
+	public static final byte  C2S_LOGIN= 0x09;
+	public static final byte  C2S_REBROADCAST =0x0A;
+	public static final byte  C2S_UPDATEREQUEST =0x0B;
+	public static final byte  C2S_MAPREQUEST =0x0C;
+	public static final byte  C2S_NEWSREQUEST =0x0D;
+	public static final byte  C2S_RELAYVOICE =0x0E;
+	public static final byte  C2S_SETFREQ =0x0F;
+	public static final byte  C2S_ATTACHTO =0x10;
+	/* missing 12 : appears to be disabled in subgame */
+	public static final byte  C2S_PICKUPFLAG =0x13;
+	public static final byte  C2S_TURRETKICKOFF =0x14;
+	public static final byte  C2S_DROPFLAGS =0x15;
+	/* uploading a file to server */
+	public static final byte  C2S_UPLOADFILE =0x16;
+	public static final byte  C2S_REGDATA =0x17;
+	public static final byte  C2S_SETSHIP =0x18;
+	/* sending new banner */
+	public static final byte  C2S_BANNER =0x19;
+	public static final byte  C2S_SECURITYRESPONSE =0x1A;
+	public static final byte  C2S_CHECKSUMMISMATCH= 0x1B;
+	public static final byte  C2S_BRICK =0x1C;
+	public static final byte  C2S_SETTINGCHANGE =0x1D;
+	public static final byte  C2S_KOTHEXPIRED =0x1E;
+	public static final byte  C2S_SHOOTBALL =0x1F;
+	public static final byte  C2S_PICKUPBALL =0x20;
+	public static final byte  C2S_GOAL =0x21;
+	/* missing 22 : subspace client sends extra checksums and other security stuff */
+	/* missing 23 */
+	public static final byte  C2S_CONTLOGIN= 0x24;
+	public static final byte  C2S_DAMAGE= 0x32;
+
 
 	// game s2c
 	public static final byte S2C_MY_UID = 0x01;
@@ -203,7 +233,7 @@ public class NetworkPacket {
 		try {
 			int permissionId = (Util.GetTickCount() ^ 0xAAAAAAAA) * 0x5f346d + 0x5abcdef;
 			// create buffer
-			ByteBuffer bb = CreatePacket(100, C2S_PASSWORD);
+			ByteBuffer bb = CreatePacket(100, C2S_CONTLOGIN);
 			bb.put((byte) (newUser ? 0x01 : 0x00));
 			bb.position(2);
 			bb.put(name.getBytes(CHARSET));
@@ -250,7 +280,7 @@ public class NetworkPacket {
 		try {
 			ByteBuffer bb;
 			
-			bb = CreatePacket(25, C2S_ARENALOGIN);
+			bb = CreatePacket(25, C2S_GOTOARENA);
 			
 			bb.put(1, shiptype);
 			bb.putShort(2, (short) 0); // disable sound
@@ -371,7 +401,7 @@ public class NetworkPacket {
 	 */
 	public static ByteBuffer CreateSecurityChecksum(int settingsChecksum,
 			int exeChecksum, int lvlChecksum) {
-		ByteBuffer bb = CreatePacket(40, C2S_SECURITYCHECKSUM);
+		ByteBuffer bb = CreatePacket(40, C2S_SECURITYRESPONSE);
 		// generate checksums
 		bb.putInt(5, settingsChecksum);
 		bb.putInt(9, exeChecksum);
@@ -381,7 +411,7 @@ public class NetworkPacket {
 	}
 
 	public static ByteBuffer CreateNewsTxtRequest() {
-		ByteBuffer bb = CreatePacket(0, C2S_NEWSTXTREQUEST);
+		ByteBuffer bb = CreatePacket(0, C2S_NEWSREQUEST);
 		return bb;
 	}
 

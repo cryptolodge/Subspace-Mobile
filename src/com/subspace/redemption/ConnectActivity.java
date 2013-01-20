@@ -191,6 +191,7 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 				messageView.append(Html.fromHtml(
 						"<font color='green'>Login Success</font><br/>", null,
 						null));
+				Thread.sleep(2000);
 				subspace.EnterArena();
 			}
 		} catch (Exception e) {
@@ -232,6 +233,10 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 	public void ChatMessageReceived(Chat message) {
 		UpdateChat("<font color='green'>" + message.Type + " "
 				+ message.Message + "</font><br/>");
+	}
+	@Override
+	public void ConsoleMessageReceived(String consoleMessage) {
+		UpdateChat("<font color='red'>"+consoleMessage+ "</font><br/>");		
 	}
 
 	@Override
@@ -323,5 +328,7 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 		super.onDestroy();
 		doUnbindService();
 	}
+
+
 
 }

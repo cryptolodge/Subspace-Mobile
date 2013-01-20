@@ -89,6 +89,7 @@ import java.nio.ByteBuffer;
 
 public class LoginResponse {
 	
+	
     public final byte ResponseCode;
     public final LoginResponseCode Response;
     public final int ServerVersion;
@@ -116,6 +117,40 @@ public class LoginResponse {
     	RegistrationFormRequest = (boolean)(buffer.get(19) != 0);
     	NewsChecksum = buffer.getInt(24);
     	
+    }
+    
+    public boolean isLoginOK()
+    {
+    	return 0x00 == ResponseCode;
+    }
+    
+    public String getLoginMessage()
+    {
+    	switch(ResponseCode)
+    	{
+    	case 0x00: return "Login OK";
+    	case 0x01: return "Unregistered Player";
+    	case 0x02: return "Bad Password";
+    	case 0x03: return "Arena is Full";
+    	case 0x04: return "Locked Out of Zone";
+    	case 0x05: return "Permission Only Arena";
+    	case 0x06: return "Permission to Spectate Only";
+    	case 0x07: return "Too many points to Play here";
+    	case 0x08: return "Connection is too Slow";
+    	case 0x09: return "Permission Only Arena";
+    	case 0x0A: return "Server is Full";
+    	case 0x0B: return "Invalid Name";
+    	case 0x0C: return "Offensive Name";
+    	case 0x0D: return "No Active Biller";
+    	case 0x0E: return "Server Busy, try Later";
+    	case 0x10: return "Restricted Zone";
+    	case 0x11: return "Demo Version Detected";
+    	case 0x12: return "Too many Demo users";
+    	case 0x13: return "Demo Versions not Allowed";
+    	case (byte)0xFF: return "Restricted Zone, Mod Access Required";
+    	default: return "Unknown";
+    	
+    	}
     }
     
 }
