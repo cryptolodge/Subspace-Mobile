@@ -22,14 +22,10 @@ import android.widget.Toast;
 public class NetworkService extends Service {
 
      static final String TAG = "Subspace";
-	
-	 private NotificationManager mNM;
+     NetworkServiceNotification notification;
+
 	 private NetworkGame subspace;
 	
-	// Unique Identification Number for the Notification.
-    // We use it on Notification start, and to cancel it.
-    private int NOTIFICATION = R.string.network_service_started;
-    private Notification notification;
 
     /**
      * Class for clients to access.  Because we know this service always
@@ -49,15 +45,12 @@ public class NetworkService extends Service {
 	 	
 	@Override
     public void onCreate() {
-        mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-        // Display a notification about us starting.  We put an icon in the status bar.
-        showNotification();
+		notification = new NetworkServiceNotification(this);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "Received start id " + startId + ": " + intent);
-               
+        Log.i(TAG, "Received start id " + startId + ": " + intent);               
         
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
@@ -78,8 +71,7 @@ public class NetworkService extends Service {
     		}
     	}
     	
-        // Cancel the persistent notification.
-        mNM.cancel(NOTIFICATION);
+    	notification.cancel();
 
         // Tell the user we stopped.
         Toast.makeText(this, R.string.network_service_stopped, Toast.LENGTH_SHORT).show();
@@ -94,36 +86,7 @@ public class NetworkService extends Service {
     // RemoteService for a more complete example.
     private final IBinder mBinder = new LocalBinder();
 
-    /**
-     * Show a notification while this service is running.
-     */
-    private void showNotification() {
-        // In this sample, we'll use the same text for the ticker and the expanded notification
-        CharSequence text = getText(R.string.network_service_started);
 
-        // Set the icon, scrolling text and timestamp
-        notification = new Notification(R.drawable.icon, text,System.currentTimeMillis());        
-        notification.flags = Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;   
-        
-        Intent notificationIntent = new Intent(this, MainMenuActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        
-        notificationIntent.addFlags(Notification.FLAG_ONGOING_EVENT);
-        // The PendingIntent to launch our activity if the user selects this notification
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-        		notificationIntent, 0);
-        
-        notification.contentIntent = contentIntent;
-
-        // Set the info for the views that show in the notification panel.
-        notification.setLatestEventInfo(this, 
-        		//getText(R.string.local_service_label)
-        		"hello",
-        		text, contentIntent);
-
-        // Send the notification.
-        mNM.notify(NOTIFICATION, notification);
-    }
     
     public void Connect(String zoneName,String ipAddress, int port)
     {
@@ -146,30 +109,13 @@ public class NetworkService extends Service {
 			subspace.SSConnect(ipAddress,port);
 			
 			//change notify we are connected
-			updateNotificationToConnected();
+			notification.connected(zoneName);			
 		} catch (Exception e) {
 			Log.e(TAG,Log.getStackTraceString(e)); 
 		}
     }   
     
-    private void updateNotificationToConnected() {
-    	
-        Intent connectNotificationIntent = new Intent(this, ConnectActivity.class);
-        connectNotificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);        
-        connectNotificationIntent.addFlags(Notification.FLAG_ONGOING_EVENT);
-		// TODO Auto-generated method stub
-        // The PendingIntent to launch our activity if the user selects this notification
-        PendingIntent connectContentIntent = PendingIntent.getActivity(this, 0,
-        		connectNotificationIntent, 0);
-        
-        // Set the info for the views that show in the notification panel.
-        notification.setLatestEventInfo(this, subspace.ZoneName,
-        		"Connected",
-        		connectContentIntent);
-        
-     // Send the notification.
-        mNM.notify(NOTIFICATION, notification);
-	}
+    
 
 
     	

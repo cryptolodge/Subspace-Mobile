@@ -84,8 +84,8 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE); // (NEW)
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN); // (NEW)
+		/*getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN); // (NEW)*/
 
 		setContentView(R.layout.connect_activity);
 
