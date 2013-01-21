@@ -47,21 +47,24 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 	static final String TAG = "Subspace";
 	public static boolean LOG_GAME_PACKETS = true;
 
+	public final String ZoneName;
+	
 	boolean loginResponseReceived = false;
 	LoginResponse loginResponse = null;
 
 	IGameCallback gameCallback;
 	News news;
 	LVL currentLVL;
-	String zoneName;
+	
 	
 	Timer positionTimer = new Timer();
 
-	public NetworkGame(Context context,String zonename) {		
+	public NetworkGame(Context context,String zonename) {
 		super(context);
 		
-		this.zoneName = zonename;
-		news = new News(_context,this.zoneName);
+		this.ZoneName = zonename;
+		
+		news = new News(_context,this.ZoneName);
 		this.setCallback(this);
 	}
 
@@ -273,7 +276,7 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					Log.d(TAG, "S2C_MapInformation");	
 					MapInformation mapInfo = new MapInformation(data);
 					
-					currentLVL = new LVL(_context,zoneName,mapInfo.Filename);
+					currentLVL = new LVL(_context,ZoneName,mapInfo.Filename);
 					
 					//we dont have this map so request it
 					if(mapInfo.CRC32!= currentLVL.CRC)

@@ -29,6 +29,7 @@ public class NetworkService extends Service {
 	// Unique Identification Number for the Notification.
     // We use it on Notification start, and to cancel it.
     private int NOTIFICATION = R.string.network_service_started;
+    private Notification notification;
 
     /**
      * Class for clients to access.  Because we know this service always
@@ -40,13 +41,17 @@ public class NetworkService extends Service {
             return NetworkService.this;
         }
     }
+    
+	public NetworkGame getSubspace()
+    {
+    	return subspace;
+    }
 	 	
 	@Override
     public void onCreate() {
         mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-
         // Display a notification about us starting.  We put an icon in the status bar.
-      //  showNotification();
+        showNotification();
     }
 
     @Override
@@ -97,10 +102,12 @@ public class NetworkService extends Service {
         CharSequence text = getText(R.string.network_service_started);
 
         // Set the icon, scrolling text and timestamp
-        Notification notification = new Notification(R.drawable.icon, text,
-                System.currentTimeMillis());
-
-        Intent notificationIntent = new Intent(this, HomeActivity.class);
+        notification = new Notification(R.drawable.icon, text,System.currentTimeMillis());        
+        notification.flags = Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;   
+        
+        Intent notificationIntent = new Intent(this, MainMenuActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        
         notificationIntent.addFlags(Notification.FLAG_ONGOING_EVENT);
         // The PendingIntent to launch our activity if the user selects this notification
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
@@ -112,7 +119,7 @@ public class NetworkService extends Service {
         notification.setLatestEventInfo(this, 
         		//getText(R.string.local_service_label)
         		"hello",
-        		text,null);//, contentIntent);
+        		text, contentIntent);
 
         // Send the notification.
         mNM.notify(NOTIFICATION, notification);
@@ -133,18 +140,37 @@ public class NetworkService extends Service {
     		NetworkGame.LOG_GAME_PACKETS = logGamePackets;
     		
     		//temp local test
-    		ipAddress= "86.163.6.11";
+    		ipAddress= "ssmobile.subspace2.net";
     		port = 2000;
     		
 			subspace.SSConnect(ipAddress,port);
+			
+			//change notify we are connected
+			updateNotificationToConnected();
 		} catch (Exception e) {
 			Log.e(TAG,Log.getStackTraceString(e)); 
 		}
     }   
     
-    public NetworkGame getSubspace()
-    {
-    	return subspace;
-    }
+    private void updateNotificationToConnected() {
+    	
+        Intent connectNotificationIntent = new Intent(this, ConnectActivity.class);
+        connectNotificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);        
+        connectNotificationIntent.addFlags(Notification.FLAG_ONGOING_EVENT);
+		// TODO Auto-generated method stub
+        // The PendingIntent to launch our activity if the user selects this notification
+        PendingIntent connectContentIntent = PendingIntent.getActivity(this, 0,
+        		connectNotificationIntent, 0);
+        
+        // Set the info for the views that show in the notification panel.
+        notification.setLatestEventInfo(this, subspace.ZoneName,
+        		"Connected",
+        		connectContentIntent);
+        
+     // Send the notification.
+        mNM.notify(NOTIFICATION, notification);
+	}
+
+
     	
 }

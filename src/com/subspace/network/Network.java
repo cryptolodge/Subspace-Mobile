@@ -28,113 +28,114 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedByInterruptException;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.DatagramChannel;
+import java.nio.channels.NotYetConnectedException;
 
 import android.util.Log;
 
 public abstract class Network implements Runnable {
-   private static final boolean LOG_RAW_PACKETS = false;
-   protected static final String TAG = "Subspace";
-   private static final int MAX_UDP_PACKETSIZE = 512;
-   
-   protected INetworkCallback callback;
-   
-   private Thread networkThread;
-   private DatagramChannel channel;
-   private boolean isRunning;   
-   
-   private int packetOutCount = 0;
-   private int packetInCount = 0;
-   private long BytesOut = 0;
-   private long BytesIn = 0;
-   
-   public Network(INetworkCallback callback) {
-       setCallback(callback);
-   }
+	private static final boolean LOG_RAW_PACKETS = false;
+	protected static final String TAG = "Subspace";
+	private static final int MAX_UDP_PACKETSIZE = 512;
 
-   public final void setCallback(INetworkCallback callback) {
-       this.callback = callback;
-   }
+	protected INetworkCallback callback;
 
-   protected final void Connect(String host, int port) throws IOException {	   
-	   InetSocketAddress remoteHostaddress = new InetSocketAddress(host,port);
-	   channel = DatagramChannel.open();
-	   //channel.configureBlocking(false);
-	   channel.connect(remoteHostaddress);   
-	   
-       //woo we are connected
-       networkThread = new Thread(this);
-       isRunning = true;
-       networkThread.start();
-   }
+	private Thread networkThread;
+	private DatagramChannel channel;
+	private boolean isRunning;
 
-   public final void run() {
-	   ByteBuffer buffer = ByteBuffer.allocateDirect(MAX_UDP_PACKETSIZE);	   
-	   buffer.order(ByteOrder.LITTLE_ENDIAN); //subspace uses little endian
-	   
-       while (isRunning) {
-           try {        	   
-        	   buffer.clear();        	   
-        	   int lengthOfData = channel.read(buffer);
-        	   //ignore random empty packets
-        	   if(lengthOfData>0)
-        	   {
-        		   //increment packet count        	   
-	        	   BytesIn+=lengthOfData;
-	               packetInCount++;
-	               //flip buffer
-	               buffer.flip();	                      
-	               //verbose
-	               if(LOG_RAW_PACKETS)
-            	   {
-	            	   Log.v(TAG, "R:" + Util.ToHex(buffer));	               
-	               }
-	               //send call back
-	               callback.Recv(buffer, true);
-        	   }
-           } catch (AsynchronousCloseException ioe) {
-        	   Log.v(TAG,"Timeout exceeded, interrupted");
-           } catch (PortUnreachableException pue)
-           {
-        	   Log.v(TAG,"Unable to connect, no response");
-           } catch (Exception ioe) {
-               Log.e(TAG,Log.getStackTraceString(ioe));
-           }
-       }
-   }
+	private int packetOutCount = 0;
+	private int packetInCount = 0;
+	private long BytesOut = 0;
+	private long BytesIn = 0;
 
-   protected final void Send(ByteBuffer buffer) throws IOException {
-	   //rewind
-	   buffer.rewind();
-	   //verbose
-	   if(LOG_RAW_PACKETS)
-	   {
-		   Log.v(TAG, "S:" + Util.ToHex(buffer));
-	   }
-	   //write
-	   int writenBytes = channel.write(buffer);  
-	   
-	   //stats
-	   BytesOut+=writenBytes;
-       packetOutCount++;
-   }
+	public Network(INetworkCallback callback) {
+		setCallback(callback);
+	}
 
-   protected final void Close() throws IOException {
-       isRunning = false;
-       channel.disconnect();
-       channel.close();
-       if (this.networkThread.isAlive()) {
-           this.networkThread.interrupt();
-       }
-   }
-   
-   //accessers
-   public final int getSentDatagramCount()
-   {
-	   return packetOutCount;
-   }
-   public final int getRecvDatagramCount()
-   {
-	   return packetInCount;
-   }
+	public final void setCallback(INetworkCallback callback) {
+		this.callback = callback;
+	}
+
+	protected final void Connect(String host, int port) throws IOException {
+		InetSocketAddress remoteHostaddress = new InetSocketAddress(host, port);
+		channel = DatagramChannel.open();
+		// channel.configureBlocking(false);
+		channel.connect(remoteHostaddress);
+
+		// woo we are connected
+		networkThread = new Thread(this);
+		isRunning = true;
+		networkThread.start();
+	}
+
+	public final void run() {
+		ByteBuffer buffer = ByteBuffer.allocateDirect(MAX_UDP_PACKETSIZE);
+		buffer.order(ByteOrder.LITTLE_ENDIAN); // subspace uses little endian
+
+		while (isRunning) {
+			try {
+				buffer.clear();
+				int lengthOfData = channel.read(buffer);
+				// ignore random empty packets
+				if (lengthOfData > 0) {
+					// increment packet count
+					BytesIn += lengthOfData;
+					packetInCount++;
+					// flip buffer
+					buffer.flip();
+					// verbose
+					if (LOG_RAW_PACKETS) {
+						Log.v(TAG, "R:" + Util.ToHex(buffer));
+					}
+					// send call back
+					callback.Recv(buffer, true);
+				}
+			} catch (AsynchronousCloseException ioe) {
+				Log.v(TAG, "Timeout exceeded, interrupted");
+			} catch (ClosedChannelException cce) {
+				Log.v(TAG, "Connection Closed by host, no response");
+			} catch (PortUnreachableException pue) {
+				Log.v(TAG, "Unable to connect, no response");
+			} catch (NotYetConnectedException pue) {
+				Log.v(TAG, "Unable to connect, no response");
+			} catch (Exception ioe) {
+				Log.e(TAG, Log.getStackTraceString(ioe));
+			}
+		}
+	}
+
+	protected final void Send(ByteBuffer buffer) throws IOException {
+		// rewind
+		buffer.rewind();
+		// verbose
+		if (LOG_RAW_PACKETS) {
+			Log.v(TAG, "S:" + Util.ToHex(buffer));
+		}
+		// write
+		int writenBytes = channel.write(buffer);
+
+		// stats
+		BytesOut += writenBytes;
+		packetOutCount++;
+	}
+
+	protected final void Close() throws IOException {
+		isRunning = false;
+		channel.disconnect();
+		channel.close();
+		if (this.networkThread.isAlive()) {
+			this.networkThread.interrupt();
+		}
+	}
+
+	// accessers
+	public final int getSentDatagramCount() {
+		return packetOutCount;
+	}
+
+	public final int getRecvDatagramCount() {
+		return packetInCount;
+	}
 }
