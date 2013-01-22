@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,6 +33,8 @@ public class ZonesActivity extends ListActivity  {
 	ArrayList<Zone> zones;
 	ZoneAdapter adapter;
 	DataHelper db;
+	
+	private Context context = this;
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -117,8 +120,15 @@ public class ZonesActivity extends ListActivity  {
         {       	
         	
         	ArrayList<DirectoryZone> zones =null;
-        	try {		
+        	try {
+        		
+            	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            	boolean logConnection =  prefs.getBoolean("pref_logConnection", true);
+        		boolean logCorePackets =  prefs.getBoolean("pref_logCorePackets", true);	
+        		
         		NetworkDirectory nd = new NetworkDirectory(_activity);
+        		NetworkDirectory.LOG_CONNECTION = logConnection;    		
+        		NetworkDirectory.LOG_CORE_PACKETS = logCorePackets;
         		nd.setDownloadCallback(this);
         		zones = nd.Download(server[0]);
         		//sort by player count

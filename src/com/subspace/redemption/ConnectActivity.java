@@ -83,7 +83,9 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.requestWindowFeature(Window.FEATURE_NO_TITLE); // (NEW)
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
+		//TODO make full screen a preference		
 		/*getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN); // (NEW)*/
 
