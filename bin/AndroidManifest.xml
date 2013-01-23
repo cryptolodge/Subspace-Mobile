@@ -7,7 +7,7 @@
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
 <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
-<uses-sdk android:targetSdkVersion="9" android:minSdkVersion="9"></uses-sdk>
+<uses-sdk android:targetSdkVersion="17" android:minSdkVersion="8"></uses-sdk>
 <uses-feature android:required="true" android:glEsVersion="0x00020000"/>
 
 
@@ -27,7 +27,7 @@
         <service android:exported="false" android:name="com.subspace.android.NetworkService"></service>
         <activity android:name="PlayActivity"></activity>
         <activity android:name="ConnectActivity"></activity>
-        <activity android:name="com.google.ads.AdActivity"></activity>
+        <activity android:name="com.google.ads.AdActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"></activity>
         
 
     </application>

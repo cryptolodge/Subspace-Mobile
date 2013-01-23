@@ -1,5 +1,7 @@
 package com.subspace.redemption;
 
+import com.google.ads.AdRequest;
+import com.google.ads.AdView;
 import com.subspace.android.NetworkService;
 
 import android.app.AlertDialog;
@@ -12,6 +14,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Html;
 import android.util.Log;
+import android.view.View;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
@@ -59,6 +62,16 @@ public class MainMenuActivity extends TabActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_menu_activity);
         
+        //hide adverts
+        if(!Adverts.ON)
+        {
+        	this.findViewById(R.id.adView).setVisibility(View.GONE);
+        } else {
+        	AdRequest adRequest = new AdRequest();
+        	adRequest.addTestDevice(AdRequest.TEST_EMULATOR);           
+        	adRequest.addTestDevice("B7697111E0B7DFDD28972510CB26CF65");
+        	((AdView)this.findViewById(R.id.adView)).loadAd(adRequest);        	
+        }
         
         TabHost tabHost = getTabHost();
 
@@ -86,9 +99,7 @@ public class MainMenuActivity extends TabActivity {
         tabHost.addTab(settingsSpec);
         //start and bind the service if we need to
 		startService(new Intent(this, NetworkService.class));
-		doBindService();
-        
-    }	
+    }	       
     
     void doBindService() {
 		// Establish a connection with the service. We use an explicit
@@ -107,10 +118,16 @@ public class MainMenuActivity extends TabActivity {
 			networkServiceIsBound = false;
 		}
 	}
-
+	
 	@Override
-	protected void onDestroy() {
-		super.onDestroy();
+	protected void onStart() {
+		super.onStart();
+		doBindService();
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
 		doUnbindService();
 	}
 
