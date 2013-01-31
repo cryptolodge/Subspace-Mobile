@@ -72,10 +72,10 @@ public class PlayActivity extends ListActivity {
 		adapter.notifyDataSetChanged();
 		// now ping all
 
-		for (Zone zone : zones) {
+	/*	for (Zone zone : zones) {
 			PingTask pingTask = new PingTask();
 			pingTask.execute(zone);
-		}
+		}*/
 	}
 
 	@Override

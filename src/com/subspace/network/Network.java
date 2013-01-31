@@ -107,18 +107,24 @@ public abstract class Network implements Runnable {
 	}
 
 	protected final void Send(ByteBuffer buffer) throws IOException {
-		// rewind
-		buffer.rewind();
-		// verbose
-		if (LOG_RAW_PACKETS) {
-			Log.v(TAG, "S:" + Util.ToHex(buffer));
+		
+		if(buffer!=null)
+		{
+			// rewind
+			buffer.rewind();
+			// verbose
+			if (LOG_RAW_PACKETS) {
+				Log.v(TAG, "S:" + Util.ToHex(buffer));
+			}
+			// write
+			int writenBytes = channel.write(buffer);
+	
+			// stats
+			BytesOut += writenBytes;
+			packetOutCount++;
+		} else {
+			Log.e(TAG, "attempted to send a null buffer");
 		}
-		// write
-		int writenBytes = channel.write(buffer);
-
-		// stats
-		BytesOut += writenBytes;
-		packetOutCount++;
 	}
 
 	protected final void Close() throws IOException {

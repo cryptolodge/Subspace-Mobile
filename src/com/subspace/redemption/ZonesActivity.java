@@ -106,7 +106,7 @@ public class ZonesActivity extends ListActivity  {
     	}
     	
         protected void onPreExecute() {
-            _dialog.setMessage("Staring Download of Zone");
+            _dialog.setMessage("Starting Download of Zone");
             _dialog.show();
         }
         
@@ -150,14 +150,17 @@ public class ZonesActivity extends ListActivity  {
         		NetworkDirectory.LOG_CORE_PACKETS = logCorePackets;
         		nd.setDownloadCallback(this);
         		zones = nd.Download(server[0]);
-        		//sort by player count
-        		Collections.sort(zones, new Comparator<DirectoryZone>(){
-        			 
-        	            public int compare(DirectoryZone o1, DirectoryZone o2) {
-        	            	return (o1.PlayerCount>o2.PlayerCount ? -1 : (o1.PlayerCount==o2.PlayerCount ? 0 : 1));
-        	            }
-        	 
-        	        });
+        		if(zones!=null)
+        		{        			
+	        		//sort by player count
+	        		Collections.sort(zones, new Comparator<DirectoryZone>(){
+	        			 
+	        	            public int compare(DirectoryZone o1, DirectoryZone o2) {
+	        	            	return (o1.PlayerCount>o2.PlayerCount ? -1 : (o1.PlayerCount==o2.PlayerCount ? 0 : 1));
+	        	            }
+	        	 
+	        	        });
+        		}
         	} 
     		catch (Exception e)
     		{    			
@@ -192,9 +195,14 @@ public class ZonesActivity extends ListActivity  {
 	        	adapter.notifyDataSetChanged();
         	}
 			
-            if (_dialog.isShowing()) {
+        	if (_dialog.isShowing()) {
                 _dialog.dismiss();
             }
+        	
+        	if(result==null)
+        	{
+        		Toast.makeText(context, "Unable to contact zone directory server", 3000).show();
+        	}
         }
 
 

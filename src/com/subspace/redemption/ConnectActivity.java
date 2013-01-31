@@ -151,13 +151,20 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 	}
 
 	protected void sendMessage(TextView textView) {
-		String message = textView.getText().toString();
+		final String message = textView.getText().toString();
 		textView.setText("");
 		
 		//write to log
 		messageView.append(Html.fromHtml("<font color='white'>" + prefs.getString("pref_username", "") + ">" + message + "</font><br/>"));
-		//send
-		subspace.SendChat(message);
+
+		//send on background thread		
+		new Thread(new Runnable() 
+		{
+			@Override
+			public void run() {
+				subspace.SendChat(message);				
+			}			
+		}).start();		
 	}
 
 	@Override

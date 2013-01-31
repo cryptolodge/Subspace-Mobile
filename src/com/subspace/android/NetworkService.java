@@ -30,6 +30,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
@@ -39,11 +40,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class NetworkService extends Service {
-
+	 
      static final String TAG = "Subspace";
      NetworkServiceNotification notification;
 
 	 private NetworkGame subspace;
+	 private Thread _networkThread;
 	
 
     /**
@@ -64,7 +66,7 @@ public class NetworkService extends Service {
 	 	
 	@Override
     public void onCreate() {
-		notification = new NetworkServiceNotification(this);
+		notification = new NetworkServiceNotification(this);		
     }
 
     @Override
@@ -107,31 +109,41 @@ public class NetworkService extends Service {
 
 
     
-    public void Connect(String zoneName,String ipAddress, int port)
+    public void Connect(final String zoneName,final String ipAddress, final int port)
     {
-    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	boolean logConnection =  prefs.getBoolean("pref_logConnection", true);
-		boolean logCorePackets =  prefs.getBoolean("pref_logCorePackets", true);
-		boolean logGamePackets =  prefs.getBoolean("pref_logGamePackets", true);	
+    	//create subspace object
+    	subspace = new NetworkGame(getApplicationContext(),zoneName);
     	
-    	try {
-    		subspace = new NetworkGame(getApplicationContext(),zoneName);
-    		//setup logging as set in settings
-    		NetworkGame.LOG_CONNECTION = logConnection;    		
-    		NetworkGame.LOG_CORE_PACKETS = logCorePackets;
-    		NetworkGame.LOG_GAME_PACKETS = logGamePackets;
-    		
-    		//temp local test
-    		ipAddress= "ssmobile.subspace2.net";
-    		port = 2000;
-    		
-			subspace.SSConnect(ipAddress,port);
-			
-			//change notify we are connected
-			notification.connected(zoneName);			
-		} catch (Exception e) {
-			Log.e(TAG,Log.getStackTraceString(e)); 
-		}
+    	if(_networkThread==null || !_networkThread.isAlive())
+    	{
+    		final Context context = this;
+    		 new Thread(new Runnable() {
+    		        public void run() {
+    		        	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    		        	boolean logConnection =  prefs.getBoolean("pref_logConnection", true);
+    		    		boolean logCorePackets =  prefs.getBoolean("pref_logCorePackets", true);
+    		    		boolean logGamePackets =  prefs.getBoolean("pref_logGamePackets", true);	
+    		        	
+    		        	try {
+    		        		
+    		        		//setup logging as set in settings
+    		        		NetworkGame.LOG_CONNECTION = logConnection;    		
+    		        		NetworkGame.LOG_CORE_PACKETS = logCorePackets;
+    		        		NetworkGame.LOG_GAME_PACKETS = logGamePackets;
+    		        		
+    		        		//temp local test
+    		        		subspace.SSConnect("ssmobile.subspace2.net",2000);
+    		        		
+    		    			//subspace.SSConnect(ipAddress,port);
+    		    			
+    		    			//change notify we are connected
+    		    			notification.connected(zoneName);			
+    		    		} catch (Exception e) {
+    		    			Log.e(TAG,Log.getStackTraceString(e)); 
+    		    		}
+    		        }
+    		 } ).start();   		 
+    	}
     }   
     
     
