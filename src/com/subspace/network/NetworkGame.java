@@ -203,6 +203,7 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					}
 				} else if (data.get(0) == NetworkPacket.S2C_MY_UID) {
 					Log.d(TAG, "S2C_MY_UID");
+					currentArena.SetMyId(data.getShort(1));
 					if (gameCallback != null) {
 						gameCallback.PlayerIdRecieved(data.getShort(1));						
 					}
@@ -229,7 +230,7 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 				} else if (data.get(0) == NetworkPacket.S2C_ChatMessage) {
 					Log.d(TAG, "S2C_ChatMessage");
 					Chat chatMessage = new Chat(data);
-					Player player = currentArena.get(chatMessage.PlayerId);
+					Player player = currentArena.Get(chatMessage.PlayerId);
 					if(player!=null)
 					{
 						chatMessage.PlayerName = player.Name;
@@ -274,9 +275,9 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					Log.d(TAG, "S2C_ChecksumRecv");							
 					SynchronizationRequest syncRequest = new SynchronizationRequest(data);					
 					SSSend(NetworkPacket.CreateSecurityChecksum(
-							0, //toso settings checksum
+							currentArena.SettingsCheckSum(syncRequest.ChecksumKey), 
 							Checksum.EXEChecksum(syncRequest.ChecksumKey),
-							currentArena.Lvl.CheckSum(syncRequest.ChecksumKey)
+							currentArena.LvlCheckSum(syncRequest.ChecksumKey)
 							));					
 				} else if (data.get(0) == NetworkPacket.S2C_KeepAlive) {
 					Log.d(TAG, "S2C_KeepAlive");					

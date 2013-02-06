@@ -49,4 +49,8 @@ public class Player {
 		OtherStuff = entering.OtherStuff;
 	}
 
+	public Player() {
+		// TODO Auto-generated constructor stub
+	}
+
 }

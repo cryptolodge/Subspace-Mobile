@@ -161,6 +161,8 @@ public class NetworkSubspace extends Network implements INetworkCallback {
         //send disconnect 2 times to make sure
         this.SSSend(NetworkPacket.CreateDisconnect());
         this.SSSend(NetworkPacket.CreateDisconnect());
+        //now forceable close the connection
+        this.Close();
     }
 
     public final void SSSend(ByteBuffer buffer) throws IOException {    

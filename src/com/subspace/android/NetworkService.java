@@ -46,7 +46,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
-public class NetworkService extends Service  {
+public class NetworkService extends Service {
 
 	static final String TAG = "Subspace";
 	NetworkServiceNotification notification;
@@ -108,6 +108,17 @@ public class NetworkService extends Service  {
 
 	public void Connect(final String zoneName, final String ipAddress,
 			final int port) {
+		if (subspace != null && subspace.isConnected()) {
+			new Thread(new Runnable() {
+				public void run() {
+					try {
+						subspace.SSDisconnect();
+					} catch (IOException e) {
+						Log.e(TAG, Log.getStackTraceString(e));
+					}
+				}
+			}).start();
+		}
 		// create subspace object
 		subspace = new NetworkGame(getApplicationContext(), zoneName);
 
@@ -166,7 +177,8 @@ public class NetworkService extends Service  {
 		subspace.setGameCallback(callback);
 	}
 
-	public LoginResponse Login(boolean isNewUser, String username, String password) {
+	public LoginResponse Login(boolean isNewUser, String username,
+			String password) {
 		try {
 			return subspace.Login(isNewUser, username, password);
 		} catch (IOException e) {
@@ -175,7 +187,5 @@ public class NetworkService extends Service  {
 			return null;
 		}
 	}
-
-	
 
 }
