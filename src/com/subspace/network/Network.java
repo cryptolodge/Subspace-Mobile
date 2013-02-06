@@ -44,6 +44,7 @@ public abstract class Network implements Runnable {
 	private Thread networkThread;
 	private DatagramChannel channel;
 	private boolean isRunning;
+	private boolean isConnected = false;
 
 	private int packetOutCount = 0;
 	private int packetInCount = 0;
@@ -59,15 +60,17 @@ public abstract class Network implements Runnable {
 	}
 
 	protected final void Connect(String host, int port) throws IOException {
+		isConnected = false;
 		InetSocketAddress remoteHostaddress = new InetSocketAddress(host, port);
 		channel = DatagramChannel.open();
-		// channel.configureBlocking(false);
+		channel.configureBlocking(false);
 		channel.connect(remoteHostaddress);
 
 		// woo we are connected
 		networkThread = new Thread(this);
 		isRunning = true;
 		networkThread.start();
+		isConnected = true;
 	}
 
 	public final void run() {
@@ -107,9 +110,17 @@ public abstract class Network implements Runnable {
 	}
 
 	protected final void Send(ByteBuffer buffer) throws IOException {
-		
-		if(buffer!=null)
-		{
+		// wait for connection first
+		while (!isConnected) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ie) {
+				Log.e(TAG, Log.getStackTraceString(ie));
+				break;
+			}
+		}
+
+		if (buffer != null) {
 			// rewind
 			buffer.rewind();
 			// verbose
@@ -118,7 +129,7 @@ public abstract class Network implements Runnable {
 			}
 			// write
 			int writenBytes = channel.write(buffer);
-	
+
 			// stats
 			BytesOut += writenBytes;
 			packetOutCount++;

@@ -81,8 +81,9 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 			networkService = ((NetworkService.LocalBinder) service)
 					.getService();
 
-			SubspaceConnect();
-
+			
+			SubspaceConnect();		
+	
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -91,11 +92,7 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 			// Because it is running in our same process, we should never
 			// see this happen.
 			networkService = null;
-			messageView
-					.append(Html
-							.fromHtml(
-									"<font color='green'>Network Service Disconnected.</font><br/>",
-									null, null));
+			UpdateChat("<font color='green'>Network Service Disconnected.</font><br/>");
 		}
 	};
 
@@ -178,8 +175,7 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 		// TODO Auto-generated method stub
 		super.onStart();
 
-		messageView.append(Html.fromHtml(
-				"<font color='green'>Initialising</font><br/>", null, null));
+		UpdateChat("<font color='green'>Initialising</font><br/>");
 
 		// start
 		startService(new Intent(this, NetworkService.class));
@@ -188,17 +184,16 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 	}
 
 	public void SubspaceConnect() {
-		messageView.append(Html.fromHtml(
-				"<font color='green'>Network Service Connected.</font><br/>",
-				null, null));
+		UpdateChat("<font color='green'>Network Service Connected.</font><br/>");
 		// lets begin our work now
-		messageView.append(Html.fromHtml("<font color='green'>Connecting to "
+				UpdateChat("<font color='green'>Connecting to "
 				+ zone.Name + " > " + zone.Ip + ":" + zone.Port
-				+ "</font><br/>", null, null));
+				+ "</font><br/>");
 		// do a subspace connect please :)
+		
 		networkService.Connect(zone.Name, zone.Ip, zone.Port);
-		messageView.append(Html.fromHtml(
-				"<font color='green'>Connected</font><br/>", null, null));
+		
+		UpdateChat("<font color='green'>Connected</font><br/>");
 		// now load subspace connection
 		subspace = networkService.getSubspace();
 		subspace.setDownloadCallback(this);
@@ -206,9 +201,7 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 		//
 		try {
 			// lets begin our work now
-			messageView.append(Html
-					.fromHtml("<font color='green'>Logging in...</font><br/>",
-							null, null));
+			UpdateChat("<font color='green'>Logging in...</font><br/>");
 			
 			String username =  prefs.getString("pref_username", "");
 	    	String password =  prefs.getString("pref_password", "");
@@ -216,9 +209,7 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 			LoginResponse response = subspace.Login(false,username,
 					password);
 			if (response != null) {
-				messageView.append(Html.fromHtml(
-						"<font color='green'>Login Success</font><br/>", null,
-						null));
+				UpdateChat("<font color='green'>Login Success</font><br/>");
 				Thread.sleep(2000);
 				subspace.EnterArena();
 			}
