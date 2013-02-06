@@ -316,6 +316,7 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                             } else if (id > this.reliableNextExpected) {
                                 byte[] msg = new byte[data.limit() - 6];
                                 //read into msg
+                                data.position(6);    
                                 data.get(msg,0,msg.length);                                
                                 this.reliableIncoming.put(id, msg);
                             } else {
@@ -362,6 +363,10 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                             SSDisconnect();
                             return null;
                         case NetworkPacket.CORE_CHUNK: {
+                        	if(LOG_CORE_PACKETS)
+                            {
+                        		Log.d(TAG,"CORE_CHUNK");                       		
+                            }
                             int oldSize;
                             if (chunkArray == null) {
                                 chunkArray = new byte[data.limit() - 2];
@@ -377,6 +382,10 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                         }
                         break;
                         case NetworkPacket.CORE_CHUNKEND: {
+                        	if(LOG_CORE_PACKETS)
+                            {
+                        		Log.d(TAG,"CORE_CHUNKEND");                       		
+                            }
                             int oldSize;
                             oldSize = chunkArray.length;
                             byte[] newArray = new byte[oldSize + data.limit() - 2];
@@ -441,10 +450,22 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                         }
                         break;
                         case NetworkPacket.CORE_STREAMCANCEL:
+                           	if(LOG_CORE_PACKETS)
+                            {
+                        		Log.d(TAG,"CORE_STREAMCANCEL");                       		
+                            }
                             break;
                         case NetworkPacket.CORE_STREAMCANCELACK:
+                        	if(LOG_CORE_PACKETS)
+                            {
+                        		Log.d(TAG,"CORE_STREAMCANCELACK");                       		
+                            }
                             break;
                         case NetworkPacket.CORE_CLUSTER: {
+                        	if(LOG_CORE_PACKETS)
+                            {
+                        		Log.d(TAG,"CORE_CLUSTER");                       		
+                            }
                             int i = 2;
                             int size;
                             byte[] subMessage;
