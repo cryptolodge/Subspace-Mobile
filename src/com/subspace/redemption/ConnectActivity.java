@@ -259,8 +259,7 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 
 	@Override
 	public void ChatMessageReceived(Chat message) {
-		UpdateChat("<font color='green'>" + message.Type + " "
-				+ message.Message + "</font><br/>");
+		UpdateChat(message.getFormattedMessage() + "<br/>");
 	}
 
 	@Override

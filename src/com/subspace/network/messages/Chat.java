@@ -60,11 +60,30 @@ public class Chat {
 	}
 	
 		
+	public String getMessageColor()
+	{
+		switch(Type)
+		{
+			case 0x00: return  "green";
+			case 0x01: return  "white";
+			case 0x02: return  "white";
+			case 0x03: return  "yellow";
+			case 0x04: return  "lightblue";
+			case 0x05: return  "green";
+			case 0x06: return  "red";
+			case 0x07: return  "green";
+			case 0x08: return  "red";
+			case 0x09: return  "darkorange";
+			default: return "white";		
+		}				
+	}
+	
 	public String getFormattedMessage()
 	{
+		String message = Message;
 		
-		
-		return "";
+		return  String.format("<font color='%s'>%s</font>", getMessageColor(), message);		
+	
 	}
 	
 
