@@ -51,6 +51,7 @@ public class Chat {
 	public final byte Sound;
 	public final short PlayerId;
 	public final String Message;
+	public String PlayerName;
 	
 	public Chat(ByteBuffer data) {
 		Type = data.get(1);
@@ -82,7 +83,7 @@ public class Chat {
 	{
 		String message = Message;
 		
-		return  String.format("<font color='%s'>%s</font>", getMessageColor(), message);		
+		return  String.format("<font color='%s'>%s%s</font>", getMessageColor(),PlayerName + ">", message);		
 	
 	}
 	

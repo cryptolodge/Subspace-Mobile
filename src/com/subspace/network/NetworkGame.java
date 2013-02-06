@@ -29,13 +29,17 @@ import java.util.Timer;
 import android.content.Context;
 import android.util.Log;
 
+import com.subspace.android.Arena;
 import com.subspace.android.Information;
 import com.subspace.android.LVL;
 import com.subspace.android.News;
+import com.subspace.android.Player;
 import com.subspace.network.messages.Chat;
 import com.subspace.network.messages.FileTransfer;
 import com.subspace.network.messages.LoginResponse;
 import com.subspace.network.messages.MapInformation;
+import com.subspace.network.messages.PlayerEnter;
+import com.subspace.network.messages.PlayerLeave;
 import com.subspace.network.messages.SynchronizationRequest;
 import com.subspace.snrrrub.Checksum;
 
@@ -53,9 +57,8 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 	LoginResponse loginResponse = null;
 
 	IGameCallback gameCallback;
-	News news;
-	LVL currentLVL;
-	
+	News news;	
+	Arena currentArena;
 	
 	Timer positionTimer = new Timer();
 
@@ -110,6 +113,8 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 			Log.d(TAG, "C2S_ARENALOGIN");
 			this.SSSendReliable(NetworkPacket.CreateArenaLogin((byte) 7,
 					(short)1024, (short)800, name, (byte)0));
+			//create new arena
+			currentArena = new Arena();
 		} catch (IOException e) {
 			Log.e(TAG, Log.getStackTraceString(e));
 		}
@@ -202,9 +207,21 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 						gameCallback.PlayerIdRecieved(data.getShort(1));						
 					}
 				} else if (data.get(0) == NetworkPacket.S2C_PlayerEntering) {
-					Log.d(TAG, "S2C_PlayerEntering")		;	
+					Log.d(TAG, "S2C_PlayerEntering");
+					PlayerEnter playerEntering = new PlayerEnter(data);
+					currentArena.Add(playerEntering);
+					//notify for ui
+					if (gameCallback != null) {
+						gameCallback.PlayerEntering(playerEntering);						
+					}
 				} else if (data.get(0) == NetworkPacket.S2C_PlayerLeaving) {
 					Log.d(TAG, "S2C_PlayerLeaving");		
+					PlayerLeave playerLeaving = new PlayerLeave(data);
+					currentArena.Remove(playerLeaving);
+					//notify for ui
+					if (gameCallback != null) {
+						gameCallback.PlayerLeaving(playerLeaving);						
+					}
 				} else if (data.get(0) == NetworkPacket.S2C_LargePosition) {
 					Log.d(TAG, "S2C_LargePosition");		
 				} else if (data.get(0) == NetworkPacket.S2C_PlayerDeath) {
@@ -212,6 +229,11 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 				} else if (data.get(0) == NetworkPacket.S2C_ChatMessage) {
 					Log.d(TAG, "S2C_ChatMessage");
 					Chat chatMessage = new Chat(data);
+					Player player = currentArena.get(chatMessage.PlayerId);
+					if(player!=null)
+					{
+						chatMessage.PlayerName = player.Name;
+					}
 					if (gameCallback != null) {
 						gameCallback.ChatMessageReceived(chatMessage);
 					}
@@ -242,10 +264,10 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					FileTransfer ft = new FileTransfer(data);
 					Log.d(TAG, "S2C_CompressedMapFile Received: " + ft.Filename);
 					
-					currentLVL.Save(ft.Data,ft.Compressed);
+					currentArena.Lvl.Save(ft.Data,ft.Compressed);
 					
 					if (gameCallback != null) {
-						gameCallback.MapReceived(currentLVL);
+						gameCallback.MapReceived(currentArena.Lvl);
 					}
 					
 				} else if (data.get(0) == NetworkPacket.S2C_ChecksumRecv) {
@@ -254,7 +276,7 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					SSSend(NetworkPacket.CreateSecurityChecksum(
 							0, //toso settings checksum
 							Checksum.EXEChecksum(syncRequest.ChecksumKey),
-							this.currentLVL.CheckSum(syncRequest.ChecksumKey)
+							currentArena.Lvl.CheckSum(syncRequest.ChecksumKey)
 							));					
 				} else if (data.get(0) == NetworkPacket.S2C_KeepAlive) {
 					Log.d(TAG, "S2C_KeepAlive");					
@@ -276,10 +298,10 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					Log.d(TAG, "S2C_MapInformation");	
 					MapInformation mapInfo = new MapInformation(data);
 					
-					currentLVL = new LVL(_context,ZoneName,mapInfo.Filename);
+					currentArena.Lvl = new LVL(_context,ZoneName,mapInfo.Filename);
 					
 					//we dont have this map so request it
-					if(mapInfo.CRC32!= currentLVL.CRC)
+					if(mapInfo.CRC32!= currentArena.Lvl.CRC)
 					{
 						Log.d(TAG, "Request Map " + mapInfo.Filename);	
 						SSSendReliable(
@@ -292,7 +314,7 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					}
 					
 				} else {
-					Log.i(TAG, "Unhandled Packet " + data.get(0));
+					Log.i(TAG, String.format("Unhandled Packet %d H%x",data.get(0),data.get(0)));
 				}
 			} catch (Exception e) {
 				Log.e(TAG, Log.getStackTraceString(e));

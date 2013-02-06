@@ -20,7 +20,8 @@
         android:layout_gravity="bottom"
         android:background="#000000"
         android:paddingBottom="8dip"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff" 
+        android:typeface="monospace"/>
 
     </ScrollView>
 
@@ -30,6 +31,7 @@
   	    android:layout_height="wrap_content"
   	    android:layout_gravity="bottom"
   	    android:hint="Chat here"
+  	    android:typeface="monospace"
   	    android:height="20dp"
   	    android:inputType="text"
   	    android:maxLength="510"

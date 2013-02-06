@@ -19,7 +19,34 @@
 
 package com.subspace.android;
 
+import com.subspace.network.messages.PlayerEnter;
+
 public class Player {
-	int Id;
-	String Name;
+	
+	public short Id;
+	public byte ShipType;
+	public byte Unknown; //todo
+	public String Name;
+	public String Squad;	
+	public int FlagPoints;
+	public int KillPoints;	
+	public short Wins;
+	public short Losses;
+	public short Audio; //todo fix me
+	public int OtherStuff; //todo fix me
+	
+	public Player(PlayerEnter entering) {
+		Id = entering.Id;
+		ShipType = entering.ShipType;
+		Unknown = entering.Unknown;
+		Name = entering.Name;
+		Squad = entering.Squad;
+		FlagPoints = entering.FlagPoints;
+		KillPoints = entering.KillPoints;
+		Wins = entering.Wins;
+		Losses = entering.Losses;
+		Audio = entering.Audio;
+		OtherStuff = entering.OtherStuff;
+	}
+
 }

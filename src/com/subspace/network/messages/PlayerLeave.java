@@ -1,5 +1,5 @@
 /*  Subspace Mobile - A Android Subspace Client
-    Copyright (C) 2012 Kingsley Masters. All Rights Reserved.
+    Copyright (C) 2013 Kingsley Masters. All Rights Reserved.
     
     kingsley dot masters at gmail dot com
 
@@ -17,20 +17,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.subspace.network;
+package com.subspace.network.messages;
 
-import com.subspace.android.LVL;
-import com.subspace.android.News;
-import com.subspace.network.messages.*;
+import java.nio.ByteBuffer;
 
-public interface IGameCallback {
-	 void ChatMessageReceived(Chat message) ;
-	 void NowInGameRecieved();
-	 void PlayerIdRecieved(int id);
-	 void MapInformationRecieved(MapInformation mapInformation);
-	 void NewsReceieved(News news);
-	void MapReceived(LVL currentLVL);
-	void ConsoleMessageReceived(String consoleMessage);
-	void PlayerEntering(PlayerEnter playerEntering);
-	void PlayerLeaving(PlayerLeave playerLeaving);
+public class PlayerLeave {
+	public final short Id;
+	
+	public PlayerLeave(ByteBuffer bb)
+	{
+		Id = bb.getShort(1);
+	}
 }

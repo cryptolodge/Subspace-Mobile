@@ -52,6 +52,8 @@ import com.subspace.network.NetworkGame;
 import com.subspace.network.messages.Chat;
 import com.subspace.network.messages.LoginResponse;
 import com.subspace.network.messages.MapInformation;
+import com.subspace.network.messages.PlayerEnter;
+import com.subspace.network.messages.PlayerLeave;
 import com.subspace.redemption.database.DataHelper;
 import com.subspace.redemption.dataobjects.Zone;
 
@@ -61,8 +63,8 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 	static String TAG = "Subspace";
 
 	TextView messageView;
-	NetworkService networkService;
-	NetworkGame subspace;
+	NetworkService subspaceService;
+
 	Zone zone;
 	boolean networkIsBound;
 	DataHelper db;
@@ -78,7 +80,7 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 			// interact with the service. Because we have bound to a explicit
 			// service that we know is running in our own process, we can
 			// cast its IBinder to a concrete class and directly access it.
-			networkService = ((NetworkService.LocalBinder) service)
+			subspaceService = ((NetworkService.LocalBinder) service)
 					.getService();
 
 			SubspaceConnect();
@@ -90,7 +92,7 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 			// unexpectedly disconnected -- that is, its process crashed.
 			// Because it is running in our same process, we should never
 			// see this happen.
-			networkService = null;
+			subspaceService = null;
 			UpdateChat("<font color='green'>Network Service Disconnected.</font><br/>");
 		}
 	};
@@ -162,7 +164,7 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				subspace.SendChat(message);
+				subspaceService.SendChat(message);
 			}
 		}).start();
 	}
@@ -193,13 +195,12 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 				+ zone.Ip + ":" + zone.Port + "</font><br/>");
 		// do a subspace connect please :)
 
-		networkService.Connect(zone.Name, zone.Ip, zone.Port);
+		subspaceService.Connect(zone.Name, zone.Ip, zone.Port);
 
 		UpdateChat("<font color='green'>Connected</font><br/>");
 		// now load subspace connection
-		subspace = networkService.getSubspace();
-		subspace.setDownloadCallback(this);
-		subspace.setGameCallback(this);
+		subspaceService.setDownloadCallback(this);
+		subspaceService.setGameCallback(this);
 		//
 
 		// lets begin our work now
@@ -212,17 +213,15 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				try {
-					LoginResponse response = subspace.Login(false, username,
-							password);
-					if (response != null) {
-						UpdateChat("<font color='green'>Login Success</font><br/>");
-						Thread.sleep(2000);
-						subspace.EnterArena();
-					}
-				} catch (Exception e) {
-					Log.e(TAG, Log.getStackTraceString(e));
+				LoginResponse response = subspaceService.Login(false, username,
+						password);
+				if (response != null) {
+					UpdateChat("<font color='green'>Login Success</font><br/>");
+					subspaceService.EnterArena();
+				} else {
+					UpdateChat("<font color='green'>Login Failed</font><br/>");
 				}
+
 			}
 		}).start();
 
@@ -355,6 +354,18 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 	protected void onDestroy() {
 		super.onDestroy();
 		doUnbindService();
+	}
+
+	@Override
+	public void PlayerEntering(PlayerEnter playerEntering) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void PlayerLeaving(PlayerLeave playerLeaving) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
