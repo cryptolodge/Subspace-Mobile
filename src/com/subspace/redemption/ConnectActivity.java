@@ -15,7 +15,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.subspace.redemption;
 
@@ -70,7 +70,7 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 	ProgressDialog _dialog;
 
 	SharedPreferences prefs;
-	
+
 	ServiceConnection networkServiceConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			// This is called when the connection with the service has been
@@ -81,9 +81,8 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 			networkService = ((NetworkService.LocalBinder) service)
 					.getService();
 
-			
-			SubspaceConnect();		
-	
+			SubspaceConnect();
+
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -100,10 +99,12 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
-		//TODO make full screen a preference		
-		/*getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN); // (NEW)*/
+
+		// TODO make full screen a preference
+		/*
+		 * getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+		 * WindowManager.LayoutParams.FLAG_FULLSCREEN); // (NEW)
+		 */
 
 		setContentView(R.layout.connect_activity);
 
@@ -126,42 +127,44 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 
 		Information.ScreenWidth = (short) display.getWidth();
 		Information.ScreenHeight = (short) display.getHeight();
-		
+
 		_dialog = new ProgressDialog(this);
-		
-		//hook up chatbox
+
+		// hook up chatbox
 		EditText editText = (EditText) findViewById(R.id.chatBox);
 		editText.setOnEditorActionListener(new OnEditorActionListener() {
 			@Override
-			public boolean onEditorAction(TextView arg0, int actionId, KeyEvent arg2) {
-		        boolean handled = false;
-		        if (actionId == EditorInfo.IME_ACTION_SEND) {
-		            sendMessage(arg0);
-		            handled = true;
-		        }
-		        return handled;
+			public boolean onEditorAction(TextView arg0, int actionId,
+					KeyEvent arg2) {
+				boolean handled = false;
+				if (actionId == EditorInfo.IME_ACTION_SEND) {
+					sendMessage(arg0);
+					handled = true;
+				}
+				return handled;
 			}
 		});
-		
+
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	
+
 	}
 
 	protected void sendMessage(TextView textView) {
 		final String message = textView.getText().toString();
 		textView.setText("");
-		
-		//write to log
-		messageView.append(Html.fromHtml("<font color='white'>" + prefs.getString("pref_username", "") + ">" + message + "</font><br/>"));
 
-		//send on background thread		
-		new Thread(new Runnable() 
-		{
+		// write to log
+		messageView.append(Html.fromHtml("<font color='white'>"
+				+ prefs.getString("pref_username", "") + ">" + message
+				+ "</font><br/>"));
+
+		// send on background thread
+		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				subspace.SendChat(message);				
-			}			
-		}).start();		
+				subspace.SendChat(message);
+			}
+		}).start();
 	}
 
 	@Override
@@ -186,36 +189,42 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 	public void SubspaceConnect() {
 		UpdateChat("<font color='green'>Network Service Connected.</font><br/>");
 		// lets begin our work now
-				UpdateChat("<font color='green'>Connecting to "
-				+ zone.Name + " > " + zone.Ip + ":" + zone.Port
-				+ "</font><br/>");
+		UpdateChat("<font color='green'>Connecting to " + zone.Name + " > "
+				+ zone.Ip + ":" + zone.Port + "</font><br/>");
 		// do a subspace connect please :)
-		
+
 		networkService.Connect(zone.Name, zone.Ip, zone.Port);
-		
+
 		UpdateChat("<font color='green'>Connected</font><br/>");
 		// now load subspace connection
 		subspace = networkService.getSubspace();
 		subspace.setDownloadCallback(this);
 		subspace.setGameCallback(this);
 		//
-		try {
-			// lets begin our work now
-			UpdateChat("<font color='green'>Logging in...</font><br/>");
-			
-			String username =  prefs.getString("pref_username", "");
-	    	String password =  prefs.getString("pref_password", "");
-			
-			LoginResponse response = subspace.Login(false,username,
-					password);
-			if (response != null) {
-				UpdateChat("<font color='green'>Login Success</font><br/>");
-				Thread.sleep(2000);
-				subspace.EnterArena();
+
+		// lets begin our work now
+		UpdateChat("<font color='green'>Logging in...</font><br/>");
+
+		final String username = prefs.getString("pref_username", "");
+		final String password = prefs.getString("pref_password", "");
+
+		// send on background thread
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					LoginResponse response = subspace.Login(false, username,
+							password);
+					if (response != null) {
+						UpdateChat("<font color='green'>Login Success</font><br/>");
+						Thread.sleep(2000);
+						subspace.EnterArena();
+					}
+				} catch (Exception e) {
+					Log.e(TAG, Log.getStackTraceString(e));
+				}
 			}
-		} catch (Exception e) {
-			Log.e(TAG, Log.getStackTraceString(e));
-		}
+		}).start();
 
 	}
 
@@ -253,9 +262,10 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 		UpdateChat("<font color='green'>" + message.Type + " "
 				+ message.Message + "</font><br/>");
 	}
+
 	@Override
 	public void ConsoleMessageReceived(String consoleMessage) {
-		UpdateChat("<font color='red'>"+consoleMessage+ "</font><br/>");		
+		UpdateChat("<font color='red'>" + consoleMessage + "</font><br/>");
 	}
 
 	@Override
@@ -308,7 +318,7 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 				messageView.append(Html.fromHtml(
 						msg.getData().getString("message"), null, null));
 			} else if (msg.arg1 == 10) {
-				// TODO Auto-generated method stub				
+				// TODO Auto-generated method stub
 				_dialog.setMessage("Download Started");
 				_dialog.show();
 			} else if (msg.arg1 == 11) {
@@ -347,7 +357,5 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 		super.onDestroy();
 		doUnbindService();
 	}
-
-
 
 }
