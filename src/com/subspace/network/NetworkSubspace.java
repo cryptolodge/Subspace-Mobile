@@ -377,7 +377,7 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                                 System.arraycopy(chunkArray, 0, newArray, 0, chunkArray.length);
                                 chunkArray = newArray;
                                 newArray = null;
-                                data.position(2); data.get(chunkArray, 0, data.limit() - 2);
+                                data.position(2); data.get(chunkArray, oldSize, data.limit() - 2);
                             }
                         }
                         break;
@@ -392,7 +392,7 @@ public class NetworkSubspace extends Network implements INetworkCallback {
                             System.arraycopy(chunkArray, 0, newArray, 0, chunkArray.length);
                             chunkArray = newArray;
                             newArray = null;
-                            data.position(2); data.get(chunkArray, 0, data.limit() - 2);
+                            data.position(2); data.get(chunkArray, oldSize, data.limit() - 2);
                             //copy to new buffer, but remember to update endian
                             ByteBuffer buffer = ByteBuffer.wrap(chunkArray);
                             buffer.order(ByteOrder.LITTLE_ENDIAN);                            
