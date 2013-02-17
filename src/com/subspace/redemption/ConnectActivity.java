@@ -49,6 +49,7 @@ import com.subspace.android.News;
 import com.subspace.network.IGameCallback;
 import com.subspace.network.ISubspaceCallback;
 import com.subspace.network.NetworkGame;
+import com.subspace.network.messages.LvlSettings;
 import com.subspace.network.messages.Chat;
 import com.subspace.network.messages.LoginResponse;
 import com.subspace.network.messages.MapInformation;
@@ -364,6 +365,12 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 
 	@Override
 	public void PlayerLeaving(PlayerLeave playerLeaving) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void LvlSettingsReceived(LvlSettings arenaSettings) {
 		// TODO Auto-generated method stub
 		
 	}

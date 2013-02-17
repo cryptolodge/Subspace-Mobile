@@ -34,6 +34,7 @@ import com.subspace.android.Information;
 import com.subspace.android.LVL;
 import com.subspace.android.News;
 import com.subspace.android.Player;
+import com.subspace.network.messages.LvlSettings;
 import com.subspace.network.messages.Chat;
 import com.subspace.network.messages.FileTransfer;
 import com.subspace.network.messages.LoginResponse;
@@ -207,6 +208,14 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					if (gameCallback != null) {
 						gameCallback.PlayerIdRecieved(data.getShort(1));						
 					}
+				} else if (data.get(0) == NetworkPacket.S2C_ArenaSettings) {
+					Log.d(TAG, "S2C_ArenaSettings");
+					currentArena.LoadSettings(data);
+					//notify for ui
+					if (gameCallback != null) {
+						gameCallback.LvlSettingsReceived(currentArena.Settings);						
+					}
+					
 				} else if (data.get(0) == NetworkPacket.S2C_PlayerEntering) {
 					Log.d(TAG, "S2C_PlayerEntering");
 					PlayerEnter playerEntering = new PlayerEnter(data);

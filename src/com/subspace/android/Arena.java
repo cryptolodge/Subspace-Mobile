@@ -1,7 +1,9 @@
 package com.subspace.android;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 
+import com.subspace.network.messages.LvlSettings;
 import com.subspace.network.messages.PlayerEnter;
 import com.subspace.network.messages.PlayerLeave;
 
@@ -13,7 +15,7 @@ public class Arena {
 	private Player _me = new Player();
 	
 	public LVL Lvl;
-	public LVLSettings Settings;
+	public LvlSettings Settings;
 	
 	public Arena()
 	{
@@ -59,6 +61,12 @@ public class Arena {
 			return Lvl.CheckSum(checksumKey);
 		}
 		return 0;
+	}
+
+	public void LoadSettings(ByteBuffer arenaSettingsRaw) {
+		// TODO Auto-generated method stub
+		Settings = new LvlSettings(arenaSettingsRaw);
+			
 	}
 	
 	

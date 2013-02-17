@@ -33,4 +33,5 @@ public interface IGameCallback {
 	void ConsoleMessageReceived(String consoleMessage);
 	void PlayerEntering(PlayerEnter playerEntering);
 	void PlayerLeaving(PlayerLeave playerLeaving);
+	void LvlSettingsReceived(LvlSettings arenaSettings);
 }
