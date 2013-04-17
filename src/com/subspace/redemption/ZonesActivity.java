@@ -141,13 +141,23 @@ public class ZonesActivity extends ListActivity  {
         	ArrayList<DirectoryZone> zones =null;
         	try {
         		
-            	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            	boolean logConnection =  prefs.getBoolean("pref_logConnection", true);
-        		boolean logCorePackets =  prefs.getBoolean("pref_logCorePackets", true);	
+				SharedPreferences prefs = PreferenceManager
+						.getDefaultSharedPreferences(context);
+				boolean logConnection = prefs.getBoolean(
+						"pref_logConnection", true);
+				boolean logCorePackets = prefs.getBoolean(
+						"pref_logCorePackets", true);
+				boolean logGamePackets = prefs.getBoolean(
+						"pref_logGamePackets", true);
+
+			
+				NetworkDirectory nd = new NetworkDirectory(_activity);
+			
+				// setup logging as set in settings
+				NetworkGame.LOG_CONNECTION = logConnection;
+				NetworkGame.LOG_CORE_PACKETS = logCorePackets;
+				NetworkGame.LOG_GAME_PACKETS = logGamePackets;	        		
         		
-        		NetworkDirectory nd = new NetworkDirectory(_activity);
-        		NetworkDirectory.LOG_CONNECTION = logConnection;    		
-        		NetworkDirectory.LOG_CORE_PACKETS = logCorePackets;
         		nd.setDownloadCallback(this);
         		zones = nd.Download(server[0]);
         		if(zones!=null)
