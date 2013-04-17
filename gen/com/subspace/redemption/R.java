@@ -12,16 +12,17 @@ public final class R {
     }
     public static final class drawable {
         public static final int icon=0x7f020000;
-        public static final int icon_play=0x7f020001;
-        public static final int icon_play_selected=0x7f020002;
-        public static final int icon_play_unselected=0x7f020003;
-        public static final int icon_settings=0x7f020004;
-        public static final int icon_settings_selected=0x7f020005;
-        public static final int icon_settings_unselected=0x7f020006;
-        public static final int icon_zone=0x7f020007;
-        public static final int icon_zone_selected=0x7f020008;
-        public static final int icon_zone_unselected=0x7f020009;
-        public static final int tiles=0x7f02000a;
+        public static final int icon_original=0x7f020001;
+        public static final int icon_play=0x7f020002;
+        public static final int icon_play_selected=0x7f020003;
+        public static final int icon_play_unselected=0x7f020004;
+        public static final int icon_settings=0x7f020005;
+        public static final int icon_settings_selected=0x7f020006;
+        public static final int icon_settings_unselected=0x7f020007;
+        public static final int icon_zone=0x7f020008;
+        public static final int icon_zone_selected=0x7f020009;
+        public static final int icon_zone_unselected=0x7f02000a;
+        public static final int tiles=0x7f02000b;
     }
     public static final class id {
         public static final int adView=0x7f060003;
