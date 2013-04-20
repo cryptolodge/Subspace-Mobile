@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
   xmlns:android="http://schemas.android.com/apk/res/android">
-  	<PreferenceCategory android:title="Player Settings" android:summary="Login Details">
+  	<PreferenceCategory android:title="About">
+  		<Preference android:title="About" android:summary="Version 1.0.0" android:defaultValue="@string/about_text" android:editable="false"/>
+  	</PreferenceCategory><PreferenceCategory android:title="Player Settings" android:summary="Login Details">
   		<EditTextPreference android:summary="Username" android:defaultValue="SubspaceMobile" android:key="pref_username" android:title="Username"></EditTextPreference>  		
   		<EditTextPreference android:summary="Username" android:defaultValue="SubspaceMobile" android:key="pref_password" android:title="Password"></EditTextPreference>
   	</PreferenceCategory>
@@ -13,4 +15,5 @@
         <CheckBoxPreference android:key="pref_logCorePackets" android:title="Log Core Packets" android:defaultValue="false"/>
         <CheckBoxPreference android:key="pref_logGamePackets" android:title="Log Game Packets"/>
     </PreferenceCategory>
+    
 </PreferenceScreen>

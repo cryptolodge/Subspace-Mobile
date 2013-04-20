@@ -25,6 +25,8 @@ public final class R {
         public static final int tiles=0x7f02000b;
     }
     public static final class id {
+        public static final int LastRefreshTextView=0x7f060006;
+        public static final int RefreshButton=0x7f060007;
         public static final int adView=0x7f060003;
         public static final int bottomtext=0x7f060005;
         public static final int chatBox=0x7f060002;
@@ -41,6 +43,7 @@ public final class R {
         public static final int zones_activity=0x7f030005;
     }
     public static final class string {
+        public static final int about_text=0x7f050007;
         public static final int app_name=0x7f050002;
         public static final int main_menu_btn_settings=0x7f050003;
         public static final int main_menu_btn_zones=0x7f050004;
