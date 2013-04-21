@@ -64,7 +64,7 @@ public class ZonesActivity extends ListActivity {
 		setContentView(R.layout.zones_activity);
 
 		zones = new ArrayList<Zone>();
-		adapter = new ZoneAdapter(this, R.layout.zone_item, zones);
+		adapter = new ZoneAdapter(this, R.layout.zone_item, zones,false);
 		db = new DataHelper(this);
 
 		setListAdapter(adapter);

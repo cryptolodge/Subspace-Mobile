@@ -84,7 +84,10 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 			subspaceService = ((NetworkService.LocalBinder) service)
 					.getService();
 
-			SubspaceConnect();
+			//only connect if we arn't already
+			if(!subspaceService.isConnected()){			
+				SubspaceConnect();
+			}
 
 		}
 

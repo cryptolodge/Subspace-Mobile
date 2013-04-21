@@ -40,12 +40,12 @@ u32 timestamp;
 };
  */
 public class NetworkPing extends Network implements INetworkCallback {
-
+	
     int sentNumber = 0;
     int playerCount = -1;
     int retryCount = 0;
-    static int MAX_RETRY = 5;
-    static int PING_WAIT_TIME = 2000; //1 second
+    static int MAX_RETRY = 2;
+    static int PING_WAIT_TIME = 1500; //2 second
 
     public NetworkPing() {
         super(null);
@@ -94,6 +94,15 @@ public class NetworkPing extends Network implements INetworkCallback {
             pingTime = -1;
         }
         return new PingInfo(pingTime, playerCount);
+    }
+    
+    public void Abort()
+    {
+    	//force abort
+    	retryCount = 1000000;
+        synchronized (this) {
+            this.notify();
+        }
     }
 
     public ByteBuffer Recv(ByteBuffer bb, boolean decrypt) {

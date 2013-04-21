@@ -111,19 +111,19 @@ public class LvlSettings {
 	
 	
 	public LvlSettings(ByteBuffer data) {
-		_raw = new byte[data.limit()-1];
-		data.position(1);
-		data.get(_raw, 0, data.limit()-1);
+		_raw = new byte[data.limit()];
+		//data.position(1);
+		data.get(_raw, 0, _raw.length);
 	}
 	
 	public int CheckSum(int checksumKey) {
 		ByteBuffer settingsBuffer = ByteBuffer.wrap(_raw);
 		settingsBuffer.order(ByteOrder.LITTLE_ENDIAN);		
-		int checksum = 0;
+		long checksum = 0;
 		
-		for(int i = 0; i < settingsBuffer.limit() / 4; i++)
-			checksum += settingsBuffer.getInt(i*4) ^ checksumKey;
-		return checksum;
+		for(int i = 0; i < 0x165; i++)
+			checksum += settingsBuffer.getInt(i*4) ^ checksumKey & 0xffffffff;
+		return (int)checksum;
 		
 	}
 

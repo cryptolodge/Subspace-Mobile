@@ -176,6 +176,16 @@ public class NetworkService extends Service {
 	public void setGameCallback(IGameCallback callback) {
 		subspace.setGameCallback(callback);
 	}
+	
+	public boolean isConnected()
+	{
+		if(subspace!=null)
+		{
+			return subspace.isConnected();
+		} else {
+			return false;
+		}
+	}
 
 	public LoginResponse Login(boolean isNewUser, String username,
 			String password) {

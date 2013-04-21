@@ -15,7 +15,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.subspace.redemption;
 
@@ -46,13 +46,14 @@ public class PlayActivity extends ListActivity {
 	List<Zone> zones;
 	ZoneAdapter adapter;
 	DataHelper db;
+	List<PingTask> pingTasks = new ArrayList<PingTask>();
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.play_activity);
 
 		zones = new CopyOnWriteArrayList<Zone>();
-		adapter = new ZoneAdapter(this, R.layout.zone_item, zones);
+		adapter = new ZoneAdapter(this, R.layout.zone_item, zones, true);
 		db = new DataHelper(this);
 
 		setListAdapter(adapter);
@@ -72,10 +73,21 @@ public class PlayActivity extends ListActivity {
 		adapter.notifyDataSetChanged();
 		// now ping all
 
-	/*	for (Zone zone : zones) {
+		for (Zone zone : zones) {
 			PingTask pingTask = new PingTask();
+			pingTasks.add(pingTask);
 			pingTask.execute(zone);
-		}*/
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+
+		for (PingTask pingTask : pingTasks) {
+			pingTask.cancel(true);
+		}
 	}
 
 	@Override
@@ -95,30 +107,43 @@ public class PlayActivity extends ListActivity {
 
 	private class PingTask extends AsyncTask<Zone, Void, Void> {
 
+		NetworkPing netping;
+
 		@Override
 		protected Void doInBackground(Zone... params) {
 
-			Zone zone = params[0];
+			if (!isCancelled()) {
+				Zone zone = params[0];
 
-			PingInfo result = null;
-			Log.i(TAG, "Pinging " + zone.Name);
+				PingInfo result = null;
+				Log.i(TAG, "Pinging " + zone.Name);
 
-			NetworkPing netping = new NetworkPing();
-			try {
-				result = netping.Ping(zone.Ip, zone.Port);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				Log.e(TAG,Log.getStackTraceString(e));;
-			}
+				netping = new NetworkPing();
+				try {
+					result = netping.Ping(zone.Ip, zone.Port);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					Log.e(TAG, Log.getStackTraceString(e));					
+				}
 
-			if (result != null) {
-				Log.i(TAG, "Players: " + result.Count + "  Ping: "
-						+ result.Ping);
-				zone.Population = result.Count;
-				zone.Ping = result.Ping;
+				if (result != null) {
+					Log.i(TAG, "Players: " + result.Count + "  Ping: "
+							+ result.Ping);
+					zone.Population = result.Count;
+					zone.Ping = result.Ping;
+				}
 			}
 
 			return null;
+		}
+
+		@Override
+		protected void onCancelled() {
+			// cancel pings
+			if(netping!=null)
+			{
+				netping.Abort();
+			}
 		}
 
 		@Override

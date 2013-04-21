@@ -171,12 +171,12 @@ public  class Checksum {
 	}
 	
 	public static int SettingsChecksum(int key,ByteBuffer settingsBuffer)
-	{
+	{	
 		int i;
-		int checksum = 0;
+		long checksum = 0;
 		
 		for(i = 0; i < 0x165; i++)
-			checksum += settingsBuffer.getInt(i*4) ^ key;
-		return checksum;
+			checksum += settingsBuffer.getInt(i*4) ^ key & 0xffffffff;
+		return (int)checksum;
 	}
 }
