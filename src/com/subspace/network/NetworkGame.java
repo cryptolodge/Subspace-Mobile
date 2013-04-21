@@ -344,4 +344,8 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 		}
 	}
 
+	public Arena getArena() {
+		return currentArena;
+	}
+
 }

@@ -116,6 +116,8 @@ public class LvlSettings {
 		data.get(_raw, 0, _raw.length);
 	}
 	
+	//Thanks to Snrrrub for providing these Checksum routines
+	//Taken from the brilliant SubChat Project and coverted into java (ick)
 	public int CheckSum(int checksumKey) {
 		ByteBuffer settingsBuffer = ByteBuffer.wrap(_raw);
 		settingsBuffer.order(ByteOrder.LITTLE_ENDIAN);		

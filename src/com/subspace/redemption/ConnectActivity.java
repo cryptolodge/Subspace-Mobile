@@ -35,9 +35,12 @@ import android.text.Html;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -55,13 +58,16 @@ import com.subspace.network.messages.LoginResponse;
 import com.subspace.network.messages.MapInformation;
 import com.subspace.network.messages.PlayerEnter;
 import com.subspace.network.messages.PlayerLeave;
+import com.subspace.redemption.ZonesActivity.DownloadZonesTask;
 import com.subspace.redemption.database.DataHelper;
 import com.subspace.redemption.dataobjects.Zone;
 
 public class ConnectActivity extends Activity implements ISubspaceCallback,
 		IGameCallback {
-
+	
 	static String TAG = "Subspace";
+	
+	Activity self = this;
 
 	TextView messageView;
 	NetworkService subspaceService;
@@ -148,6 +154,17 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 					handled = true;
 				}
 				return handled;
+			}
+		});
+		
+		//hookup button
+		
+		Button viewArenaButton = (Button) findViewById(R.id.ViewArenaButton);
+		
+		viewArenaButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				Intent gameIntent = new Intent(self, GameActivity.class);
+				startActivity(gameIntent);
 			}
 		});
 

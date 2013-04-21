@@ -186,6 +186,10 @@ public class NetworkService extends Service {
 			return false;
 		}
 	}
+	
+	public Arena getArena() {
+		return subspace.getArena();
+	}
 
 	public LoginResponse Login(boolean isNewUser, String username,
 			String password) {

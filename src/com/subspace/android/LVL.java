@@ -41,7 +41,7 @@ public class LVL extends ZoneFile {
 
 	}
 
-	public synchronized  int CheckSum(int key) {
+	public synchronized  int CheckSum(long key) {
 		int savekey = (int) key;
 		
 		if(Tiles!=null)
@@ -54,12 +54,12 @@ public class LVL extends ZoneFile {
 						tile = Tiles[x][y].Type;
 						if ((tile >= LVLTile.TILE_START && tile <= LVLTile.TILE_END)
 								|| tile == LVLTile.SAFETY) {
-							key += savekey ^ tile;
+							key += savekey ^ (byte)tile & 0xFFFFFFFF;
 						}
 					}
 				}
 		}
-		return key;
+		return (int)key;
 	}
 
 	@Override

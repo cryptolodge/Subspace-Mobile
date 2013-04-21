@@ -28,6 +28,7 @@
         <activity android:name="PlayActivity"></activity>
         <activity android:name="ConnectActivity"></activity>
         <activity android:name="com.google.ads.AdActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"></activity>
+        <activity android:name="GameActivity"></activity>
         
 
     </application>
