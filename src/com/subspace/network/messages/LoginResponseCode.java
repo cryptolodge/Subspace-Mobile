@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import android.util.SparseArray;
+
 /*  Subspace Mobile - A Android Subspace Client
 Copyright (C) 2012 Kingsley Masters. All Rights Reserved.
 
@@ -54,8 +56,7 @@ public enum LoginResponseCode {
 	public int getType() {
 		return type;
 	}
-
-	private static final Map<Integer, LoginResponseCode> map = new HashMap<Integer, LoginResponseCode>();
+	private static final SparseArray<LoginResponseCode> map = new SparseArray<LoginResponseCode>();
 
 	static {
 		for (LoginResponseCode type : LoginResponseCode.values()) {
@@ -64,7 +65,7 @@ public enum LoginResponseCode {
 	}
 
 	public static LoginResponseCode fromCode(int type) {
-		if (map.containsKey(type)) {
+		if (map.indexOfKey(type)>=0) {
 			return map.get(type);
 		}
 		throw new NoSuchElementException(type + "not found");

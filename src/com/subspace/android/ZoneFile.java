@@ -71,7 +71,7 @@ public abstract class ZoneFile {
 		OutputStream fos;
 		try {
 			if (requiresDecompressing) {
-				fos = new InflaterOutputStream(context.openFileOutput(Filename,
+				fos =  new alt.java.util.zip.InflaterOutputStream(context.openFileOutput(Filename,
 						Context.MODE_PRIVATE));
 			} else {
 				fos = context.openFileOutput(Filename, Context.MODE_PRIVATE);

@@ -36,6 +36,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
@@ -93,8 +94,12 @@ public class ZonesActivity extends ListActivity {
 
 	@Override
 	protected void onStart() {
-		super.onStart();
-		adapter.addAll(db.getAllZones());
+		super.onStart();	
+		ArrayList<Zone> zones = db.getAllZones();
+        for(Zone zone: zones)
+        {
+        	adapter.add(zone);  
+        }       		
 		adapter.notifyDataSetChanged();
 		UpdateLastRefreshTextView();
 	}
@@ -224,7 +229,7 @@ public class ZonesActivity extends ListActivity {
 
 			if (result == null) {
 				Toast.makeText(self, "Unable to contact zone directory server",
-						3000).show();
+						Toast.LENGTH_SHORT).show();
 			} else {
 			      // We need an Editor object to make preference changes.
 			      // All objects are from android.context.Context

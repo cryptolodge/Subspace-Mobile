@@ -330,9 +330,9 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 
 	}
 
-	private Handler handler = new Handler() {
+	private Handler handler = new Handler(new Handler.Callback() {
 		@Override
-		public void handleMessage(Message msg) {
+		public boolean handleMessage(Message msg) {
 			if (msg.arg1 == 0) {
 				messageView.append(Html.fromHtml(
 						msg.getData().getString("message"), null, null));
@@ -349,9 +349,9 @@ public class ConnectActivity extends Activity implements ISubspaceCallback,
 				}
 
 			}
+			return true;
 		}
-
-	};
+	});
 
 	void doBindService() {
 		// Establish a connection with the service. We use an explicit
