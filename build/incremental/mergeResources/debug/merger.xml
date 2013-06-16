@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger>
+
+    <dataSet config="main" >
+        <source path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res" >
+            <file
+                name="icon_play"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable\icon_play.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="icon_settings"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable\icon_settings.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="icon_zone"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable\icon_zone.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="tiles"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable\tiles.bm2"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="icon"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable-hdpi\icon.png"
+                qualifiers="hdpi"
+                type="drawable" />
+            <file
+                name="icon_original"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable-hdpi\icon_original.png"
+                qualifiers="hdpi"
+                type="drawable" />
+            <file
+                name="icon_play_selected"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable-hdpi\icon_play_selected.png"
+                qualifiers="hdpi"
+                type="drawable" />
+            <file
+                name="icon_play_unselected"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable-hdpi\icon_play_unselected.png"
+                qualifiers="hdpi"
+                type="drawable" />
+            <file
+                name="icon_settings_selected"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable-hdpi\icon_settings_selected.png"
+                qualifiers="hdpi"
+                type="drawable" />
+            <file
+                name="icon_settings_unselected"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable-hdpi\icon_settings_unselected.png"
+                qualifiers="hdpi"
+                type="drawable" />
+            <file
+                name="icon_zone_selected"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable-hdpi\icon_zone_selected.png"
+                qualifiers="hdpi"
+                type="drawable" />
+            <file
+                name="icon_zone_unselected"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable-hdpi\icon_zone_unselected.png"
+                qualifiers="hdpi"
+                type="drawable" />
+            <file
+                name="icon"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable-ldpi\icon.png"
+                qualifiers="ldpi"
+                type="drawable" />
+            <file
+                name="icon"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable-mdpi\icon.png"
+                qualifiers="mdpi"
+                type="drawable" />
+            <file
+                name="connect_activity"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\layout\connect_activity.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="game_activity"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\layout\game_activity.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="main_menu_activity"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\layout\main_menu_activity.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="play_activity"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\layout\play_activity.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="splash_activity"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\layout\splash_activity.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="zones_activity"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\layout\zones_activity.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="zone_item"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\layout\zone_item.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\values\DatabaseDDL.xml"
+                qualifiers="" >
+                <string name="tbl_Settings" >CREATE TABLE tbl_Settings(id INTEGER PRIMARY KEY, name VARCHAR(8000), value VARCHAR(8000))
+                </string>
+                <string name="tbl_Zone" >CREATE TABLE tbl_Zone(id INTEGER PRIMARY KEY, name VARCHAR, ip VARCHAR, port INT, description VARCHAR, iscustom INTEGER)
+                </string>
+            </file>
+            <file
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\values\strings.xml"
+                qualifiers="" >
+                <string name="main_menu_btn_settings" >Settings
+                </string>
+                <string name="app_name" >Subspace Redemption
+                </string>
+                <string name="network_service_started" >Subspace Network Service Started
+                </string>
+                <string name="about_text" ></string>
+                <string name="network_service_stopped" >Subspace Network Service Stopped
+                </string>
+                <string name="main_menu_btn_zones" >Zones
+                </string>
+            </file>
+            <file
+                name="application_preferences_screen"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\xml\application_preferences_screen.xml"
+                qualifiers=""
+                type="xml" />
+        </source>
+        <source path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\build\res\rs\debug" />
+    </dataSet>
+    <dataSet config="debug" >
+        <source path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\src\debug\res" />
+    </dataSet>
+
+</merger>

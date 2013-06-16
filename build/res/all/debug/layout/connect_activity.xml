@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/ViewArenaButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Arena" />
+
+<ScrollView
+    android:id="@+id/scroller"
+    android:layout_width="fill_parent"
+    android:layout_height="0dp"
+    android:background="#000000"
+    android:gravity="top" 
+    android:layout_weight="1">
+
+    <TextView
+        android:id="@+id/messageView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="#000000"
+        android:paddingBottom="8dip"
+        android:textColor="#ffffff" 
+        android:typeface="monospace"/>
+
+    </ScrollView>
+
+  	<EditText
+  	    android:id="@+id/chatBox"
+  	    android:layout_width="fill_parent"
+  	    android:layout_height="wrap_content"
+  	    android:layout_gravity="bottom"
+  	    android:hint="Chat here"
+  	    android:typeface="monospace"
+  	    android:height="20dp"
+  	    android:inputType="text"
+  	    android:maxLength="510"
+  	    android:background="#222222"
+  	    android:textColor="#FFFFFF" 
+  	    android:imeOptions="actionSend"/>
+
+</LinearLayout>
+    

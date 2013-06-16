@@ -11,8 +11,6 @@
     <facet type="android-gradle" name="Android-Gradle">
       <configuration>
         <option name="GRADLE_PROJECT_PATH" value=":" />
-        <option name="PROJECT_ABSOLUTE_PATH" value="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile" />
-        <option name="GRADLE_HOME_DIR_PATH" />
       </configuration>
     </facet>
   </component>
@@ -49,6 +47,7 @@
       <sourceFolder url="file://$MODULE_DIR$/tests/resources" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/.externalToolBuilders" />
       <excludeFolder url="file://$MODULE_DIR$/.git" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/.metadata" />
       <excludeFolder url="file://$MODULE_DIR$/.settings" />
       <excludeFolder url="file://$MODULE_DIR$/build/apk" />

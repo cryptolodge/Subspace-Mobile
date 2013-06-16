@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="about_text"></string>
+    <string name="app_name">Subspace Redemption</string>
+    <string name="main_menu_btn_settings">Settings</string>
+    <string name="main_menu_btn_zones">Zones</string>
+    <string name="network_service_started">Subspace Network Service Started</string>
+    <string name="network_service_stopped">Subspace Network Service Stopped</string>
+    <string name="tbl_Settings">CREATE TABLE tbl_Settings(id INTEGER PRIMARY KEY, name VARCHAR(8000), value VARCHAR(8000))</string>
+    <string name="tbl_Zone">CREATE TABLE tbl_Zone(id INTEGER PRIMARY KEY, name VARCHAR, ip VARCHAR, port INT, description VARCHAR, iscustom INTEGER)</string>
+
+</resources>
