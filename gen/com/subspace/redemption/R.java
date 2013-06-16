@@ -22,7 +22,12 @@ public final class R {
         public static final int icon_zone=0x7f020008;
         public static final int icon_zone_selected=0x7f020009;
         public static final int icon_zone_unselected=0x7f02000a;
-        public static final int tiles=0x7f02000b;
+        public static final int over1=0x7f02000b;
+        public static final int over2=0x7f02000c;
+        public static final int over3=0x7f02000d;
+        public static final int over4=0x7f02000e;
+        public static final int over5=0x7f02000f;
+        public static final int tiles=0x7f020010;
     }
     public static final class id {
         public static final int LastRefreshTextView=0x7f060007;

@@ -75,6 +75,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback, Ge
 	@Override
 	public void onLongPress(MotionEvent e) {
 		// TODO Auto-generated method stub
+	
 		
 	}
 
