@@ -91,7 +91,8 @@ public abstract class ZoneFile {
 		Data.order(ByteOrder.LITTLE_ENDIAN);
 		
 		UpdateCRC();
-		
+		//rewind to start
+		Data.rewind();
 		AfterLoad();
 	}
 	

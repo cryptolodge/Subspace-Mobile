@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
@@ -18,12 +19,20 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback, Ge
 	
 	int x;
 	int y;
+	Paint paint = new Paint(); 
+	Rect viewPort = new Rect();
 
 	public GamePanel(Context context) {
 		super(context);
 		gestureScanner = new GestureDetector(context,this);
-		
+	    
+		paint.setColor(Color.GREEN); 
 		getHolder().addCallback(this);
+		
+		//centre it
+		x = 1024*16 / 2;
+		y = 1024*16/2;			
+		
 	}
 
 	public void setArena(Arena arena) {
@@ -34,10 +43,15 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback, Ge
 	public void onDraw(Canvas canvas) {
 		// draw map if its loaded
 		if (arena != null) {
-			Paint paint = new Paint(); 
-			paint.setColor(Color.GREEN); 
-			canvas.drawText("x " + x + " y " + y, 100,100, paint);
-			canvas.drawBitmap(arena.Lvl.Tileset, 50 - x, 50 - y, null);
+			
+			
+			int screenWidth = getWidth();
+		    int screenHeight = getHeight();
+		    	
+			canvas.drawText("x " + x + " y " + y, 100,100, paint);			
+			viewPort.set(x,y,x+screenWidth,y+screenHeight);
+			arena.Lvl.Draw(canvas,viewPort);
+			
 		}
 	}
 
