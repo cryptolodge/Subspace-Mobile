@@ -125,17 +125,42 @@
                 </string>
                 <string name="network_service_started" >Subspace Network Service Started
                 </string>
-                <string name="about_text" ></string>
-                <string name="network_service_stopped" >Subspace Network Service Stopped
-                </string>
                 <string name="main_menu_btn_zones" >Zones
                 </string>
+                <string name="network_service_stopped" >Subspace Network Service Stopped
+                </string>
+                <string name="about_text" ></string>
             </file>
             <file
                 name="application_preferences_screen"
                 path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\xml\application_preferences_screen.xml"
                 qualifiers=""
                 type="xml" />
+            <file
+                name="over3"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable\over3.bm2"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="over4"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable\over4.bm2"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="over1"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable\over1.bm2"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="over2"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable\over2.bm2"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="over5"
+                path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\res\drawable\over5.bm2"
+                qualifiers=""
+                type="drawable" />
         </source>
         <source path="C:\Users\Kingsley\Documents\GitHub\Subspace-Mobile\build\res\rs\debug" />
     </dataSet>

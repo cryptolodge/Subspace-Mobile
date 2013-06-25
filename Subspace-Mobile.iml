@@ -47,6 +47,7 @@
       <sourceFolder url="file://$MODULE_DIR$/tests/resources" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/.externalToolBuilders" />
       <excludeFolder url="file://$MODULE_DIR$/.git" />
+      <excludeFolder url="file://$MODULE_DIR$/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/.metadata" />
       <excludeFolder url="file://$MODULE_DIR$/.settings" />

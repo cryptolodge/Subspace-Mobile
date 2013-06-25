@@ -42,7 +42,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback, Ge
 	@Override
 	public void onDraw(Canvas canvas) {
 		// draw map if its loaded
-		if (arena != null) {
+		if (arena != null && arena.Lvl!=null) {
 			
 			
 			int screenWidth = getWidth();

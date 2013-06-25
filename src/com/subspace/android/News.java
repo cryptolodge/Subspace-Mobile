@@ -19,6 +19,7 @@
 
 package com.subspace.android;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -28,6 +29,7 @@ import android.content.Context;
 
 public class News extends ZoneFile {
 	
+	String newsContent;
 
 	public News(Context context, String zoneName)
 	{
@@ -35,7 +37,18 @@ public class News extends ZoneFile {
 	}
 	public String getDocument()
 	{
-		return Util.GetString(Data);		
+		return newsContent; //Util.GetString(Data);		
+	}
+	
+	@Override
+	public synchronized void AfterLoad(LittleEndianDataInputStream inputStream) throws IOException {
+		newsContent = "";
+		StringBuffer inputLine = new StringBuffer();
+            String tmp; 
+            while ((tmp = inputStream.readLine()) != null) {
+                inputLine.append(tmp);
+            }
+       newsContent = inputLine.toString();
 	}
 	
 	

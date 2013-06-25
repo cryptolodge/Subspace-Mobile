@@ -156,7 +156,7 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 						//send sync
 						SSSync();
 						//now ask for news
-						if(news.CRC!=loginResponse.NewsChecksum)
+						if(news.getCRC32()!=loginResponse.NewsChecksum)
 						{
 							Log.d(TAG, "Downloading News");
 							SSSendReliable(
@@ -311,7 +311,7 @@ public class NetworkGame extends NetworkSubspace implements INetworkCallback {
 					currentArena.Lvl = new LVL(_context,ZoneName,mapInfo.Filename);
 					
 					//we dont have this map so request it
-					if(mapInfo.CRC32!= currentArena.Lvl.CRC)
+					if(mapInfo.CRC32!= currentArena.Lvl.getCRC32())
 					{
 						Log.d(TAG, "Request Map " + mapInfo.Filename);	
 						SSSendReliable(

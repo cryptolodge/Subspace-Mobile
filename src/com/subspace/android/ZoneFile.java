@@ -19,6 +19,8 @@
 
 package com.subspace.android;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -44,14 +46,17 @@ import com.subspace.network.Util;
 
 public abstract class ZoneFile {
 
-	protected static final String TAG = "Subspace";
-
+	protected static final String TAG = "Subspace";	
 	public boolean Exists;
 	public final String Filename;
-	public int CRC;
-	public ByteBuffer Data;
+		
 
 	protected Context context;
+	
+	private static final int CRC32_BUFFERSIZE = 8 * 1024;
+	private PureJavaCrc32 crc32Fast = new PureJavaCrc32();
+	private int CRC;
+	private LittleEndianDataInputStream inputStream;
 
 	public ZoneFile(Context context, String zoneName, String filename) {
 		this.context = context;
@@ -86,31 +91,50 @@ public abstract class ZoneFile {
 
 	public void Reload() {
 		Log.i(TAG, "Loading " + Filename);
-		// memory map file
-		Data = byteBufferForFile(context.getFileStreamPath(Filename));
-		Data.order(ByteOrder.LITTLE_ENDIAN);
-		
-		UpdateCRC();
-		//rewind to start
-		Data.rewind();
-		AfterLoad();
+		try {
+			getFileStream();
+			UpdateCRC();
+		} catch (IOException e) {
+			Log.e(TAG, Log.getStackTraceString(e));		
+		} finally {
+			try {
+				inputStream.close();
+			} catch (IOException e) {
+				Log.e(TAG, Log.getStackTraceString(e));
+			}
+		}			
+		try {
+			getFileStream();
+			AfterLoad(inputStream);
+		} catch (IOException e) {			
+			Log.e(TAG, Log.getStackTraceString(e));
+		}
+	}
+
+	protected void getFileStream() {
+		inputStream = littleEndianInputStreamForFile(context.getFileStreamPath(Filename));
 	}
 	
-	protected void AfterLoad() { }
+	protected void AfterLoad(LittleEndianDataInputStream inputStream) throws IOException { }
 
-	private void UpdateCRC() {
-		if (Data != null) {
-			Log.d(TAG, "Init CRC32");
+	private void UpdateCRC() throws IOException {
+		if (inputStream != null) {
+			Log.d(TAG, "Init CRC32");			
+			crc32Fast.reset();
+			byte[] buffer = new byte[CRC32_BUFFERSIZE];
 			
-			byte[] data = new byte[Data.limit()];
-			Data.rewind();
-			Data.position(0);
-			Data.get(data);		
-			Data.rewind();
-			Log.d(TAG, "Calculating CRC32");
+			Log.d(TAG, "Processing File");
+			//read into buffer
+			int len = inputStream.read(buffer);
+			while (len>0)
+			{					
+				//update crc32
+				crc32Fast.update(buffer, 0, len);
+				//read next line into buffer
+				len = inputStream.read(buffer);						
+			} 			
 			
-			CRC = (int)Util.CRC32(data);
-
+			CRC = (int)crc32Fast.getValue();
 			Log.d(TAG, "Completed CRC32: " + CRC);
 		}
 	}
@@ -125,25 +149,22 @@ public abstract class ZoneFile {
 			Log.e(TAG, Log.getStackTraceString(e));
 		}
 	}
+	
+	public int getCRC32() {
+		return CRC;
+	}
 
-	public static ByteBuffer byteBufferForFile(File file) {
+	protected static LittleEndianDataInputStream littleEndianInputStreamForFile(File file) {
 
-		FileChannel vectorChannel;
-		ByteBuffer vector;
+		FileInputStream fin; 
+		LittleEndianDataInputStream result =null;
 		try {
-			vectorChannel = new FileInputStream(file).getChannel();
+			fin = new FileInputStream(file);
+			result = new LittleEndianDataInputStream(new BufferedInputStream(fin));
 		} catch (FileNotFoundException e1) {
-			Log.e(TAG, Log.getStackTraceString(e1));
-			return null;
+			Log.e(TAG, Log.getStackTraceString(e1));			
 		}
-		try {
-			vector = vectorChannel.map(MapMode.READ_ONLY, 0,
-					vectorChannel.size());
-		} catch (IOException e) {
-			Log.e(TAG, Log.getStackTraceString(e));
-			return null;
-		}
-		return vector;
+		return result;
 
 	}
 
